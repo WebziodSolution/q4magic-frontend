@@ -408,7 +408,7 @@ const renderJSONSummary = (summaryStr) => {
                         </h4>
                         <ul className="list-disc list-inside space-y-1 pl-1 text-sm text-gray-700 font-semibold">
                             {ensureArray(data.nextSteps).map((step, i) => (
-                                <li key={i}>{step}</li>
+                                <li key={i}>{typeof step === 'string' ? step.replace(/^[-•\s]+/, '') : step}</li>
                             ))}
                         </ul>
                     </div>
