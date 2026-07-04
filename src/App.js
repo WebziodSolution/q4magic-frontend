@@ -43,6 +43,7 @@ import Activities from "./pages/dashboard/activities/activities";
 import Performance from "./pages/dashboard/performance/performance";
 import Support from "./pages/landingPage/support";
 import DealManagement from "./pages/dashboard/dealManagement/dealManagement";
+import Privacy from "./pages/privacy/Privacy";
 
 library.add(fas, far, fab)
 
@@ -63,6 +64,10 @@ const App = ({ setLoading }) => {
     {
       path: "/support",
       element: <Support />,
+    },
+    {
+      path: "/privacy",
+      element: <Privacy />,
     },
     {
       path: "/register",
