@@ -44,6 +44,7 @@ import Performance from "./pages/dashboard/performance/performance";
 import Support from "./pages/landingPage/support";
 import DealManagement from "./pages/dashboard/dealManagement/dealManagement";
 import Privacy from "./pages/privacy/Privacy";
+import ManageApps from "./pages/dashboard/manageApps/manageApps";
 
 library.add(fas, far, fab)
 
@@ -172,6 +173,10 @@ const App = ({ setLoading }) => {
         {
           path: "calendar",
           element: <Calendar />,
+        },
+        {
+          path: "manageapps",
+          element: <ManageApps />,
         },
         {
           path: "results",

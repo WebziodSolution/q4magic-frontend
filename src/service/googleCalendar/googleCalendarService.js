@@ -45,3 +45,13 @@ export const getCalendarAuthentication = async () => {
         throw error;
     }
 };
+
+export const revokeGoogleCalendar = async () => {
+    try {
+        const response = await axiosInterceptor().get(`${googleCalendarURL}/revoke`);
+        return response.data;
+    } catch (error) {
+        console.error("Error revoking Google calendar:", error);
+        throw error;
+    }
+};

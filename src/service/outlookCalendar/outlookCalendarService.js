@@ -10,3 +10,13 @@ export const outlookCalendarOauth = async (data) => {
         throw error;
     }
 };
+
+export const revokeOutlookCalendar = async () => {
+    try {
+        const response = await axiosInterceptor().get(`${outlookCalendarUrl}/revoke`);
+        return response.data;
+    } catch (error) {
+        console.error("Error revoking Outlook calendar:", error);
+        throw error;
+    }
+};

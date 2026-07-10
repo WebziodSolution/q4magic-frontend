@@ -30,7 +30,7 @@ const Layout = ({ sessionEndModel }) => {
         </div>
 
         {/* Scrollable Content (ONLY this scrolls) */}
-        <main className="flex-1 min-h-0 overflow-y-auto pt-3">
+        <main className="flex-1 min-h-0 overflow-y-auto py-3">
           <div className="px-4 mx-auto">
             <Outlet />
             {location.pathname === "/dashboard" && <Dashboard />}

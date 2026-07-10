@@ -64,6 +64,7 @@ import EnvTable from "./envTable";
 import { getOpportunitiesCurrentEnvironmentByOppId } from "../../../service/opportunitiesCurrentEnvironment/opportunitiesCurrentEnvironmentService";
 import DealDocs from "./dealDocs";
 import { getMeetingSummaryByOppId } from "../../../service/meetingSummary/meetingSummaryService";
+import { GridExpandMoreIcon } from "@mui/x-data-grid";
 
 // ----------------------------
 // Constants / Helpers
@@ -2546,7 +2547,7 @@ const ViewOpportunity = ({ setAlert, oppSelectedTabIndex, setOppSelectedTabIndex
             {/* Notes Tab */}
             {oppSelectedTabIndex === 1 && (
                 <>
-                    <div className="flex justify-start items-start gap-4">
+                    {/* <div className="flex justify-start items-start gap-4">
                         <div className={`${openDrawer ? "w-56 md:w-80 " : "w-0 md:w-0 "} transition-all duration-300 ease-in-out overflow-hidden`}>
                             <DatePickerComponent
                                 name="meetingDate"
@@ -2664,9 +2665,7 @@ const ViewOpportunity = ({ setAlert, oppSelectedTabIndex, setOppSelectedTabIndex
                                         <MeetingNotesTable />
                                     </div>
 
-                                    {/* 3-Column Layout: Why, Value, Contacts */}
                                     <div className="grid grid-cols-1 xl:grid-cols-3 gap-8 my-3 mb-5">
-                                        {/* Why Do Anything */}
                                         <div ref={whyCardRef} className="w-full bg-white rounded-2xl shadow-md border border-gray-100 p-3 min-h-[15rem] relative flex flex-col">
                                             <p className="font-medium text-gray-800 text-2xl text-center mb-4 shrink-0">
                                                 Why Do Anything
@@ -2712,7 +2711,6 @@ const ViewOpportunity = ({ setAlert, oppSelectedTabIndex, setOppSelectedTabIndex
                                             </div>
                                         </div>
 
-                                        {/* Value */}
                                         <div ref={valueCardRef} className="w-full bg-white rounded-2xl shadow-md border border-gray-100 p-3 min-h-[15rem] relative flex flex-col">
                                             <p className="font-medium text-gray-800 text-2xl text-center mb-4 shrink-0">Value</p>
 
@@ -2743,7 +2741,6 @@ const ViewOpportunity = ({ setAlert, oppSelectedTabIndex, setOppSelectedTabIndex
                                                     />
                                                 )}
 
-                                                {/* Floating Hint Image */}
                                                 {activeEditorHint === "BusinessValue" && (
                                                     <div className="absolute top-0 right-[-240px] hidden xl:block bg-white border border-gray-200 rounded-xl shadow-2xl z-50 p-3
                             before:content-[''] before:absolute before:top-10 before:left-[-8px] 
@@ -2758,7 +2755,6 @@ const ViewOpportunity = ({ setAlert, oppSelectedTabIndex, setOppSelectedTabIndex
                                             </div>
                                         </div>
 
-                                        {/* Key Contacts */}
                                         <div className="w-full bg-white rounded-2xl shadow-md border border-gray-100 p-3 min-h-[15rem] relative flex flex-col">
                                             <div className="flex justify-start items-center mb-4">
                                                 <p className="font-medium text-gray-800 text-2xl text-center grow">Key Contacts</p>
@@ -2784,10 +2780,8 @@ const ViewOpportunity = ({ setAlert, oppSelectedTabIndex, setOppSelectedTabIndex
                                                 </div>
                                             )}
 
-                                            {/* Add Contact Modal */}
                                             {isAddContactOpen && (
                                                 <div className="absolute top-0 -left-[300px] right-20 z-10 rounded-xl bg-white shadow-xl border border-gray-200 overflow-hidden">
-                                                    {/* Header */}
                                                     <div className="flex items-center justify-end px-5 py-1 border-b">
                                                         <button
                                                             onClick={closeAddContactModal}
@@ -2798,9 +2792,7 @@ const ViewOpportunity = ({ setAlert, oppSelectedTabIndex, setOppSelectedTabIndex
                                                         </button>
                                                     </div>
 
-                                                    {/* Table */}
                                                     <div className="px-4 py-4">
-                                                        {/* makes table scrollable on smaller widths */}
                                                         <div className="w-full overflow-x-auto">
                                                             <table className="w-full">
                                                                 <thead>
@@ -2830,7 +2822,6 @@ const ViewOpportunity = ({ setAlert, oppSelectedTabIndex, setOppSelectedTabIndex
                                                                     {contactRows.map((row, index) => (
                                                                         <React.Fragment key={row.tempId || index}>
                                                                             <tr className="bg-white border-b-0">
-                                                                                {/* Name */}
                                                                                 <td className="px-1 py-1 align-middle w-48">
                                                                                     <Select
                                                                                         options={allContacts}
@@ -2850,7 +2841,6 @@ const ViewOpportunity = ({ setAlert, oppSelectedTabIndex, setOppSelectedTabIndex
                                                                                     />
                                                                                 </td>
 
-                                                                                {/* Title */}
                                                                                 <td className="px-1 py-1 align-middle w-40">
                                                                                     <Input
                                                                                         value={row.title || ""}
@@ -2860,7 +2850,6 @@ const ViewOpportunity = ({ setAlert, oppSelectedTabIndex, setOppSelectedTabIndex
                                                                                     />
                                                                                 </td>
 
-                                                                                {/* Role */}
                                                                                 <td className="px-1 py-1 align-middle w-48">
                                                                                     <Select
                                                                                         options={opportunityContactRoles}
@@ -2874,7 +2863,6 @@ const ViewOpportunity = ({ setAlert, oppSelectedTabIndex, setOppSelectedTabIndex
                                                                                     />
                                                                                 </td>
 
-                                                                                {/* Key */}
                                                                                 <td className="px-1 py-1 align-middle w-20">
                                                                                     <div className="flex justify-end items-center">
                                                                                         <Checkbox
@@ -2884,7 +2872,6 @@ const ViewOpportunity = ({ setAlert, oppSelectedTabIndex, setOppSelectedTabIndex
                                                                                     </div>
                                                                                 </td>
 
-                                                                                {/* Actions */}
                                                                                 <td className="px-1 py-1 align-middle text-right">
                                                                                     <button
                                                                                         type="button"
@@ -2896,7 +2883,6 @@ const ViewOpportunity = ({ setAlert, oppSelectedTabIndex, setOppSelectedTabIndex
                                                                                     </button>
                                                                                 </td>
                                                                             </tr>
-                                                                            {/* Notes Row */}
                                                                             <tr className="bg-white">
                                                                                 <td colSpan={3} className="px-1 py-1">
                                                                                     <div className="flex justify-start items-center gap-3">
@@ -2959,40 +2945,6 @@ const ViewOpportunity = ({ setAlert, oppSelectedTabIndex, setOppSelectedTabIndex
                                                 </div>
                                             )}
 
-                                            {/* <div className="overflow-y-auto px-1 flex-1">
-                                <ul className="text-sm">
-                                    {allContactsWithEdits?.filter((row) => row.isKey === true).length > 0 ? (
-                                        allContactsWithEdits
-                                            ?.filter((row) => row.isKey === true)
-                                            .map((c, idx) => {
-                                                const initials = (c.contactName || c.title || c.role || "UK").split(' ').map(n => n?.[0] || '').join('').substring(0, 2).toUpperCase();
-                                                const bgColors = ['bg-[#4267B2]', 'bg-[#9C27B0]', 'bg-[#009688]', 'bg-[#E91E63]', 'bg-[#FF9800]'];
-                                                const badgeColor = bgColors[idx % bgColors.length];
-                                                return (
-                                                    <li className="grid grid-cols-[auto,1fr,1fr,1fr] gap-2 pb-1 items-center border-b border-gray-50 last:border-0">
-                                                        <span className={`w-8 h-8 rounded-full flex items-center justify-center text-white font-semibold text-xs ${badgeColor}`}>
-                                                            {initials}
-                                                        </span>
-                                                        <span className="font-medium text-indigo-600 text-base truncate" title={c.contactName || ""}>
-                                                            {c.contactName}
-                                                        </span>
-                                                        <span className="text-gray-500 text-base truncate" title={c.title || ""}>
-                                                            {c.title || "-"}
-                                                        </span>
-                                                        <span className="text-indigo-600 text-base truncate" title={c.role || ""}>
-                                                            {c.role || "-"}
-                                                        </span>
-                                                    </li>
-                                                )
-                                            })
-                                    ) : (
-                                        <p className="text-sm text-gray-400 italic">
-                                            No contacts linked to this opportunity.
-                                        </p>
-                                    )}
-                                </ul>
-                            </div> */}
-
                                             <div className="overflow-y-auto flex-1 max-h-[8rem] relative">
                                                 {allContactsWithEdits?.filter((row) => row.isKey === true).length > 0 ? (
                                                     <ul className="space-y-3">
@@ -3018,7 +2970,6 @@ const ViewOpportunity = ({ setAlert, oppSelectedTabIndex, setOppSelectedTabIndex
                                                                             <div className="flex items-center gap-2 group relative">
                                                                                 <span className="font-bold text-[#1e3a8a] text-[15px] cursor-pointer" onClick={() => setIsSelectContactsOpen(!isSelectContactsOpen)}>{c.contactName || ''}</span>
                                                                                 <span className="text-gray-600 text-[13px]">- {c.title}</span>
-                                                                                {/* Hover Tooltip */}
                                                                                 {c?.opportunityContactNotesList?.some(n => n.note?.trim()) && (
                                                                                     <div className="hidden group-hover:block absolute top-0 left-10 mb-2 z-50 w-64 p-3 bg-white border border-gray-200 rounded-lg shadow-lg text-xs text-gray-700 animate-in fade-in zoom-in duration-200 cursor-pointer">
                                                                                         {c.opportunityContactNotesList.map((n, i) => (
@@ -3029,8 +2980,6 @@ const ViewOpportunity = ({ setAlert, oppSelectedTabIndex, setOppSelectedTabIndex
                                                                                                 </div>
                                                                                             ) : null
                                                                                         ))}
-                                                                                        {/* Tiny arrow */}
-                                                                                        {/* <div className="absolute top-full left-4 -mt-1.5 w-3 h-3 bg-white border-r border-b border-gray-200 rotate-45"></div> */}
                                                                                     </div>
                                                                                 )}
                                                                             </div>
@@ -3056,7 +3005,6 @@ const ViewOpportunity = ({ setAlert, oppSelectedTabIndex, setOppSelectedTabIndex
 
                                             <div className="flex items-end gap-2 absolute bottom-3 right-3">
                                                 <Tooltip title="Select" arrow>
-                                                    {/* <CustomIcons iconName="fa-solid fa-circle-arrow-right" css="text-white h-3.5 w-3.5" /> */}
                                                     <button disabled={allContactsWithEdits?.length === 0} className="h-7 px-4 rounded-full text-[11px] font-bold tracking-wider text-white bg-[#4B5563] hover:bg-[#374151] shadow-sm flex items-center gap-1.5 cursor-pointer" onClick={() => setIsSelectContactsOpen(!isSelectContactsOpen)}>SELECT</button>
                                                 </Tooltip>
                                                 <Tooltip title="Add New" arrow>
@@ -3070,9 +3018,7 @@ const ViewOpportunity = ({ setAlert, oppSelectedTabIndex, setOppSelectedTabIndex
                                         </div>
                                     </div>
 
-                                    {/* 3-Column Layout: Decision, Env, Next Steps */}
                                     <div className="grid grid-cols-1 xl:grid-cols-3 gap-8">
-                                        {/* Decision Map */}
                                         <div className="w-full bg-white rounded-2xl shadow-md border border-gray-100 p-3 h-60 flex flex-col">
                                             <div className="flex justify-between mb-4 flex-none">
                                                 <p className="font-medium text-gray-800 text-2xl">Decision Map</p>
@@ -3084,11 +3030,9 @@ const ViewOpportunity = ({ setAlert, oppSelectedTabIndex, setOppSelectedTabIndex
                                                 </div>
                                             </div>
 
-                                            {/* Component: Now 'h-full' will mean '100% of the REMAINING space' */}
                                             <DecisionMapTimeline items={salesProcess} />
                                         </div>
 
-                                        {/* Current Environment */}
                                         <div
                                             ref={envCardRef}
                                             className="w-full bg-white rounded-2xl shadow-md border border-gray-100 p-3 h-[15rem] relative flex flex-col"
@@ -3097,14 +3041,11 @@ const ViewOpportunity = ({ setAlert, oppSelectedTabIndex, setOppSelectedTabIndex
                                                 Current Environment
                                             </p>
 
-                                            {/* Content area */}
                                             <div
                                                 className="flex-1 cursor-pointer hover:bg-gray-50 rounded-xl p-2 transition-colors overflow-hidden"
                                                 onClick={() => !isEditingEnv && setIsEditingEnv(true)}
                                             >
-                                                {/* Make this a column layout so competitors can sit at the bottom */}
                                                 <div className="h-full flex flex-col">
-                                                    {/* Scrollable list */}
                                                     <ul className="list-disc pl-5 flex-1 overflow-y-auto pr-2 space-y-1">
                                                         {currentEnvRows
                                                             ?.filter((row) => row.solution !== "Competitors")
@@ -3122,7 +3063,6 @@ const ViewOpportunity = ({ setAlert, oppSelectedTabIndex, setOppSelectedTabIndex
                                                             })}
                                                     </ul>
 
-                                                    {/* Bottom pinned competitors (no absolute) */}
                                                     {currentEnvRows
                                                         ?.filter((row) => row.solution === "Competitors")
                                                         ?.map((row, rowIndex) => {
@@ -3157,7 +3097,6 @@ const ViewOpportunity = ({ setAlert, oppSelectedTabIndex, setOppSelectedTabIndex
                                         </div>
 
 
-                                        {/* Next Steps */}
                                         <div ref={nextStepsRef} className="w-full bg-white rounded-2xl shadow-md border border-gray-100 p-3 min-h-[15rem] relative flex flex-col" onClick={() => setIsEditingNextSteps(true)}>
                                             <p className="font-medium text-gray-800 text-2xl text-center mb-4">Next Steps</p>
                                             {isEditingNextSteps ?
@@ -3169,7 +3108,7 @@ const ViewOpportunity = ({ setAlert, oppSelectedTabIndex, setOppSelectedTabIndex
                                 </div>
                             )}
 
-                            {/* {!selectedMeeting && (!meetingSummary || meetingSummary.length === 0) && (
+                            {!selectedMeeting && (!meetingSummary || meetingSummary.length === 0) && (
                                 <div className="flex flex-col items-center justify-center py-20 px-4 bg-white rounded-2xl border border-gray-100 shadow-sm text-center">
                                     <div className="h-16 w-16 bg-blue-50 rounded-2xl flex justify-center items-center text-blue-600 mb-4 animate-pulse">
                                         <CustomIcons iconName="fa-solid fa-calendar-check" css="text-blue-500 text-3xl" />
@@ -3179,14 +3118,14 @@ const ViewOpportunity = ({ setAlert, oppSelectedTabIndex, setOppSelectedTabIndex
                                         Please select a meeting from the calendar sidebar to view attendees, notes, and action items.
                                     </p>
                                 </div>
-                            )} */}
+                            )}
                         </div>
-                    </div>
+                    </div> */}
 
                     {/* Summary Section */}
-                    {meetingSummary && meetingSummary.length > 0 && (
+                    {meetingSummary && meetingSummary.length > 0 ? (
                         <div className="mt-6 space-y-6">
-                            {meetingSummary.map((item, idx) => {
+                            {meetingSummary?.map((item, idx) => {
                                 let displayIntro = item.introduction;
                                 let displaySummary = item.summary;
 
@@ -3319,6 +3258,13 @@ const ViewOpportunity = ({ setAlert, oppSelectedTabIndex, setOppSelectedTabIndex
                                     </Accordion>
                                 );
                             })}
+                        </div>
+                    ) : (
+                        <div className="mt-6 space-y-6">
+                            <div className="flex justify-center items-center gap-3 bg-white border border-gray-200 rounded-xl p-4">
+                                {/* <div className="w-1 h-6 bg-orange-500 rounded-full"></div> */}
+                                <h3 className="text-lg font-semibold text-gray-800">No Meeting Summary Available for <span className="text-blue-600">{watch("opportunity") || "This Opportunity"}</span></h3>
+                            </div>
                         </div>
                     )}
 

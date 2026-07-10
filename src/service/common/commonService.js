@@ -114,6 +114,7 @@ export const headerTitles = [
     { title: "Performance", path: "/dashboard/activities" },
     { title: "Performance", path: "/dashboard/results" },
     { title: "My Calendar", path: "/dashboard/calendar" },
+    { title: "Manage Apps", path: "/dashboard/manageapps" },
 ];
 
 export const matchRoute = (routePath, currentPath) => {
