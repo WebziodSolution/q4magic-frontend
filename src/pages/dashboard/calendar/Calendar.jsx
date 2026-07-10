@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { useLocation } from 'react-router-dom';
+import { NavLink, useLocation } from 'react-router-dom';
 import { Calendar as BigCalendar, dateFnsLocalizer } from 'react-big-calendar';
 import { format, parse, startOfWeek, getDay } from 'date-fns';
 import { enUS } from 'date-fns/locale';
@@ -437,14 +437,16 @@ const Calendar = ({ setAlert }) => {
               </div>
             </Tooltip>
 
-            <Tooltip title="My Calendar Setting" arrow>
-              <div className="group w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-600 transition-all cursor-pointer">
-                <CustomIcons
-                  iconName="fa-solid fa-gear"
-                  css="w-4 h-4 group-hover:text-white"
-                />
-              </div>
-            </Tooltip>
+            <NavLink to="/dashboard/calendarsettings">
+              <Tooltip title="My Calendar Setting" arrow>
+                <div className="group w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-600 transition-all cursor-pointer">
+                  <CustomIcons
+                    iconName="fa-solid fa-gear"
+                    css="w-4 h-4 group-hover:text-white"
+                  />
+                </div>
+              </Tooltip>
+            </NavLink>
           </div>
         </div>
 
