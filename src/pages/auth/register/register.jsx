@@ -594,6 +594,9 @@ const Register = ({ setAlert, setLoading }) => {
                             activeStep === 0 && (
                                 <div className="flex justify-center">
                                     <div className="min-w-80">
+                                        <p className="text-gray-700 text-base font-medium mb-6">
+                                            Plan: <span className="text-[#44288E] font-bold">360Pipe</span> &nbsp;&nbsp;<span className="text-[#44288E] font-bold">$29.95/month</span>.
+                                        </p>
                                         <div className="grid grid-cols-1 gap-4">
                                             <div>
                                                 <Controller

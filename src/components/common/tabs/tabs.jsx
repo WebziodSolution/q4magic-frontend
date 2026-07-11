@@ -124,19 +124,22 @@
 import Components from "../../muiComponents/components";
 import { useTheme } from "@mui/material";
 
-export const Tabs = ({ selectedTab, handleChange, tabsData, type = "default", center = false, fontSize = null }) => {
+export const Tabs = ({ selectedTab, handleChange, tabsData, type = "default", center = false, fontSize = null, orientation = "horizontal" }) => {
   const theme = useTheme();
+  const isVertical = orientation === "vertical";
 
   return (
     <Components.Box
       sx={{
-        width: "100%",
+        width: isVertical ? "auto" : "100%",
         display: "flex",
+        flexDirection: isVertical ? "column" : "row",
         justifyContent: center ? "center" : "start",
-        gap: "20px",
-        borderBottom: type === "default" ? "1px solid #E0E0E0" : "none",
-        overflowX: "auto",
-        whiteSpace: "nowrap",
+        gap: isVertical ? "15px" : "20px",
+        borderBottom: !isVertical && type === "default" ? "1px solid #E0E0E0" : "none",
+        borderRight: isVertical && type === "default" ? "1px solid #E0E0E0" : "none",
+        overflowX: isVertical ? "visible" : "auto",
+        whiteSpace: isVertical ? "normal" : "nowrap",
         scrollbarWidth: "none",
         "&::-webkit-scrollbar": { display: "none" },
         backgroundColor: type === "header" ? "#ffffff" : "transparent",
@@ -157,7 +160,7 @@ export const Tabs = ({ selectedTab, handleChange, tabsData, type = "default", ce
                 fontWeight: isSelected ? 600 : 400,
                 fontSize: fontSize ? fontSize : "20px",
                 textTransform: "none",
-                padding: "8px 8px",
+                padding: "8px 12px",
                 cursor: "pointer",
                 display: "flex",
                 alignItems: "center",
@@ -169,22 +172,26 @@ export const Tabs = ({ selectedTab, handleChange, tabsData, type = "default", ce
                 // Keep the background logic for the header type
                 backgroundColor: "transparent",
 
-                // The Animated Bottom Border
+                // The Animated Border (Bottom for horizontal, Right for vertical)
                 "&::after": {
                   content: '""',
                   position: "absolute",
-                  bottom: 0,
-                  left: "50%",
-                  transform: "translateX(-50%)", // Centers the line so it grows outward
-                  height: isHeaderType ? "3px" : "3px",
-                  width: isSelected ? "100%" : "0%", // Full width if selected, 0% if not
+                  bottom: isVertical ? "auto" : 0,
+                  right: isVertical ? 0 : "auto",
+                  left: isVertical ? "auto" : "50%",
+                  top: isVertical ? "50%" : "auto",
+                  transform: isVertical ? "translateY(-50%)" : "translateX(-50%)",
+                  height: isVertical ? "100%" : "3px",
+                  width: isVertical ? "3px" : "0%",
+                  maxWidth: isVertical ? (isSelected ? "3px" : "0px") : "100%",
                   backgroundColor: "#6A3FAE",
-                  transition: "width 0.3s ease-in-out", // The animation effect
+                  transition: isVertical ? "max-width 0.3s ease-in-out" : "width 0.3s ease-in-out",
                 },
 
-                // Triggers the width to expand to 100% on hover
+                // Triggers the border to expand on hover
                 "&:hover::after": {
-                  width: "100%",
+                  width: isVertical ? "3px" : "100%",
+                  maxWidth: "3px",
                 }
               }}
             >
