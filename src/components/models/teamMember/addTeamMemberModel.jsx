@@ -62,7 +62,7 @@ function AddTeamMemberModel({ open, handleClose, selectedMember, members, append
             const data = res?.data?.result?.map((item) => {
                 return {
                     id: item.id,
-                    title: item.username || item.name,
+                    title: item.username || item.firstName + ' ' + item.lastName,
                     role: item.subUserTypeDto?.name || ''
                 }
             })

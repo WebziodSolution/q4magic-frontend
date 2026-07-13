@@ -177,14 +177,16 @@ const AddTeamMembers = ({ setAlert }) => {
 
     const handleGetAllCustomers = async () => {
         const res = await getAllSubUsers()
-        const data = res?.data?.result?.map((item) => {
-            return {
-                id: item.id,
-                title: item.name,
-                role: item.subUserTypeDto?.name || ''
-            }
-        })
-        setCustomers(data)
+        if (res?.data?.status === 200) {
+            const data = res?.data?.result?.map((item) => {
+                return {
+                    id: item.id,
+                    title: item.username || item.firstName + ' ' + item.lastName,
+                    role: item.subUserTypeDto?.name || ''
+                }
+            })
+            setCustomers(data)
+        }
     }
 
     useEffect(() => {

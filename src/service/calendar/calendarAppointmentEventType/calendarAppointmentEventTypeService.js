@@ -11,9 +11,9 @@ export const saveAppointmentEventType = async (id = null, data) => {
     }
 };
 
-export const getAllEventTypeList = async () => {
+export const getAllEventTypeList = async (id = null) => {
     try {
-        const response = await axiosInterceptor().get(`${calendarAppointmentEventTypeURL}/get/all`);
+        const response = await axiosInterceptor().get(`${calendarAppointmentEventTypeURL}/get/all${id ? `?id=${id}` : ''}`);
         return response.data;
     } catch (error) {
         console.error("Error fetching EventType:", error);

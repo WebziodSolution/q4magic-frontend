@@ -11,8 +11,12 @@ export const getAllTeamAndMembers = async () => {
     }
 };
 
-export const getAllTeams = async () => {
+export const getAllTeams = async (id = null) => {
     try {
+        if (id) {
+            const response = await axiosInterceptor().get(`${teamDetailsURL}/get/all?cusId=${id}`);
+            return response.data;
+        }
         const response = await axiosInterceptor().get(`${teamDetailsURL}/get/all`);
         return response.data;
     } catch (error) {

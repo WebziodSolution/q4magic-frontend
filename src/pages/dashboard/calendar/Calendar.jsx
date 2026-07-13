@@ -26,6 +26,7 @@ import { getEventList, getSync } from '../../../service/calendar/calendarService
 import { userTimeZone } from '../../../service/common/commonService';
 import { calenderName, outlookCalendarUrl } from '../../../config/config';
 import { outlookCalendarOauth } from '../../../service/outlookCalendar/outlookCalendarService';
+import AppointmentLinkModel from '../../../components/models/calendar/appointmentLinkModel';
 
 const locales = {
   'en-US': enUS,
@@ -66,6 +67,7 @@ const Calendar = ({ setAlert }) => {
 
   const [eventModalOpen, setEventModalOpen] = useState(false);
   const [selectedSlot, setSelectedSlot] = useState(null);
+  const [appointmentLinkOpen, setAppointmentLinkOpen] = useState(false);
 
   const dateForBigCalendar = date.toDate();
 
@@ -341,10 +343,6 @@ const Calendar = ({ setAlert }) => {
   }, []);
 
   useEffect(() => {
-
-  }, []);
-
-  useEffect(() => {
     loadEvents(date);
   }, [thirdPartyCalendar, date]);
 
@@ -429,7 +427,10 @@ const Calendar = ({ setAlert }) => {
             </ClickAwayListener>
 
             <Tooltip title="Appointment Link" arrow>
-              <div className="group w-8 h-8 flex items-center justify-center rounded-full hover:bg-blue-600 transition-all cursor-pointer">
+              <div
+                onClick={() => setAppointmentLinkOpen(true)}
+                className="group w-8 h-8 flex items-center justify-center rounded-full hover:bg-blue-600 transition-all cursor-pointer"
+              >
                 <CustomIcons
                   iconName="fa-solid fa-link"
                   css="w-4 h-4 group-hover:text-white"
@@ -590,6 +591,11 @@ const Calendar = ({ setAlert }) => {
         handleGetAllEvents={() => loadEvents(date)}
         thirdPartyCalendar={thirdPartyCalendar}
         currentView={currentView}
+      />
+
+      <AppointmentLinkModel
+        open={appointmentLinkOpen}
+        handleClose={() => setAppointmentLinkOpen(false)}
       />
 
     </>

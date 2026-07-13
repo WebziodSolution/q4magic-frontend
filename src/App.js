@@ -46,6 +46,7 @@ import DealManagement from "./pages/dashboard/dealManagement/dealManagement";
 import Privacy from "./pages/privacy/Privacy";
 import ManageApps from "./pages/dashboard/manageApps/manageApps";
 import CalendarSetting from "./pages/dashboard/calendar/calendarSetting";
+import Appointment from "./pages/dashboard/calendar/appointment/appointment";
 
 library.add(fas, far, fab)
 
@@ -74,6 +75,10 @@ const App = ({ setLoading }) => {
     {
       path: "/register",
       element: <Register />,
+    },
+    {
+      path: "/appointment",
+      element: <Appointment />,
     },
     {
       path: "/subaccountactivesetup/:token",

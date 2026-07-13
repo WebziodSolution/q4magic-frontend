@@ -62,6 +62,8 @@ export const outlookCalendarUrl = baseURL + '/outlookCalendar'
 export const timeZonesURL = baseURL + '/time-zones'
 export const calendarURL = baseURL + '/calendar'
 export const calendarAppointmentEventTypeURL = baseURL + '/calendarAppointmentEventType'
+export const calendarAppointmentURL = baseURL + '/calendarAppointment'
+
 export const closeplanURL = baseURL + '/closeplan'
 export const closePlanNotesURL = baseURL + '/closeplannotes'
 export const meetingURL = baseURL + '/meeting'
