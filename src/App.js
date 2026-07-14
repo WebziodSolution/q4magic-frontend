@@ -77,7 +77,7 @@ const App = ({ setLoading }) => {
       element: <Register />,
     },
     {
-      path: "/appointment",
+      path: "/meeting",
       element: <Appointment />,
     },
     {

@@ -40,3 +40,13 @@ export const sendEmailAppointmentLink = async (data) => {
         throw error;
     }
 };
+
+export const saveAppointment = async (data) => {
+    try {
+        const response = await axiosInterceptor().post(`${calendarAppointmentURL}/saveAppointment`, data);
+        return response.data;
+    } catch (error) {
+        console.error("Error save appointment:", error);
+        throw error;
+    }
+};

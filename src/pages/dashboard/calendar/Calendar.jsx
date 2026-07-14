@@ -426,7 +426,7 @@ const Calendar = ({ setAlert }) => {
               </Menu>
             </ClickAwayListener>
 
-            <Tooltip title="Appointment Link" arrow>
+            <Tooltip title="Meeting Link" arrow>
               <div
                 onClick={() => setAppointmentLinkOpen(true)}
                 className="group w-8 h-8 flex items-center justify-center rounded-full hover:bg-blue-600 transition-all cursor-pointer"

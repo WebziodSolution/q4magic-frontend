@@ -27,8 +27,8 @@ function AppointmentLinkModel({ setAlert, open, handleClose }) {
     const cusId = userDetails?.userId;
     const encryptedUserId = encryptUserId(cusId);
 
-    const displayLink = `${siteURL}/appointment?v=${encryptedUserId}`;
-    const testLink = `${window.location.origin}/appointment?v=${encryptedUserId}`;
+    const displayLink = `${siteURL}/meeting?v=${encryptedUserId}`;
+    const testLink = `${window.location.origin}/meeting?v=${encryptedUserId}`;
 
     const handleCopy = async () => {
         try {
@@ -78,7 +78,7 @@ function AppointmentLinkModel({ setAlert, open, handleClose }) {
                     sx={{ m: 0, p: 2, fontWeight: 600, fontSize: '1.25rem', color: theme.palette.text.primary }}
                     id="appointment-link-dialog-title"
                 >
-                    Appointment Link
+                    Meeting Link
                 </Components.DialogTitle>
 
                 <Components.IconButton
@@ -97,7 +97,7 @@ function AppointmentLinkModel({ setAlert, open, handleClose }) {
                 <Components.DialogContent dividers>
                     <div className="flex flex-col gap-4">
                         <p className="text-sm font-bold text-gray-800">
-                            Send Public Appointment Link in Email or Text
+                            Send Public Meeting Link in Email or Text
                         </p>
 
                         <div className="flex items-center justify-between border-b border-gray-300 pb-2 pt-1 w-full gap-4">

@@ -54,7 +54,7 @@ const CalendarSetting = () => {
                         fontSize="15px"
                     />
                 </div>
-                <div className="md:col-span-10 bg-white p-6 rounded-lg shadow-sm border border-gray-200 min-h-[400px]">
+                <div className={`md:col-span-10 min-h-[400px] ${selectedTab === 2 ? "" : "bg-white p-6 rounded-lg shadow-sm border border-gray-200"}`}>
                     {tabsData[selectedTab]?.component}
                 </div>
             </div>

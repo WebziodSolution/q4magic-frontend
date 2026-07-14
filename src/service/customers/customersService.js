@@ -177,3 +177,21 @@ export const getUserSalesForceToken = async (id) => {
         console.log(error)
     }
 }
+
+export const saveTimeZone = async (timeZone) => {
+    try {
+        const response = await axiosInterceptor().get(`${customersURL}/saveTimeZone?timeZone=${timeZone}`)
+        return response.data
+    } catch (error) {
+        console.log(error)
+    }
+}
+
+export const saveWebConference = async (webConference) => {
+    try {
+        const response = await axiosInterceptor().post(`${customersURL}/saveWebConference`, { webConference })
+        return response.data
+    } catch (error) {
+        console.log(error)
+    }
+}
