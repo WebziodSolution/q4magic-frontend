@@ -195,3 +195,21 @@ export const saveWebConference = async (webConference) => {
         console.log(error)
     }
 }
+
+export const saveMailNotification = async (emailNotification) => {
+    try {
+        const response = await axiosInterceptor().post(`${customersURL}/saveMailNotification`, { emailNotification })
+        return response.data
+    } catch (error) {
+        console.log(error)
+    }
+}
+
+export const removeUserSalesForceToken = async (id) => {
+    try {
+        const response = await axiosInterceptor().delete(`${customersURL}/removeUserSalesForceToken/${id}`)
+        return response.data
+    } catch (error) {
+        console.log(error)
+    }
+}

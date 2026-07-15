@@ -7,7 +7,7 @@ import Checkbox from '../../../../components/common/checkBox/checkbox';
 import Input from '../../../../components/common/input/input';
 import Button from '../../../../components/common/buttons/button';
 import { getUserDetails } from '../../../../utils/getUserDetails';
-import { getCustomer, saveTimeZone, saveWebConference } from '../../../../service/customers/customersService';
+import { getCustomer, saveMailNotification, saveTimeZone, saveWebConference } from '../../../../service/customers/customersService';
 import { getTimeZones } from '../../../../service/timeZones/timeZoneService';
 import { userTimeZone } from '../../../../service/common/commonService';
 import { setAlert } from '../../../../redux/commonReducers/commonReducers';
@@ -60,12 +60,16 @@ const CalendarGeneralSetting = () => {
                     if (customerRes?.data?.status === 200) {
                         const dbTz = customerRes?.data?.result?.timeZone;
                         const dbWebConferenceLink = customerRes?.data?.result?.webConferenceLink;
+                        const emailNotification = customerRes?.data?.result?.emailNotification;
 
                         if (dbTz) {
                             initialTzVal = dbTz;
                         }
                         if (dbWebConferenceLink) {
                             setWebConferenceLink(dbWebConferenceLink);
+                        }
+                        if (emailNotification) {
+                            setSelectedNotifications(emailNotification?.split(",").map(Number));
                         }
                     }
                 } catch (err) {
@@ -133,19 +137,24 @@ const CalendarGeneralSetting = () => {
     };
 
     // Notification save handler: Logs structured payload and pops alert
-    const handleSaveNotification = () => {
-        // Construct standard format string with leading comma (e.g. ",15,510")
-        const emailNotification = selectedNotifications.length > 0
-            ? "," + [...selectedNotifications].sort((a, b) => a - b).join(",")
+    const handleSaveNotification = async () => {
+        const emailNotification = selectedNotifications?.length > 0
+            ? `${[...selectedNotifications].sort((a, b) => a - b).join(",")}`
             : "";
-
-        console.log("Saving Notification Payload:", { emailNotification });
-
-        dispatch(setAlert({
-            open: true,
-            type: "success",
-            message: "Notification settings saved successfully"
-        }));
+        const res = await saveMailNotification(emailNotification)
+        if (res.status === 200) {
+            dispatch(setAlert({
+                open: true,
+                type: "success",
+                message: "Notification settings saved successfully"
+            }));
+        } else {
+            dispatch(setAlert({
+                open: true,
+                type: "error",
+                message: "Failed to save notification settings"
+            }));
+        }
     };
 
     // Web Conference Link save handler: Logs content and pops alert

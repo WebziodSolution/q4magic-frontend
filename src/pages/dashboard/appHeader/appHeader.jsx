@@ -206,11 +206,11 @@ const AppHeader = ({
   const handleSyncData = async () => {
     const res = await saveSyncStatus()
     if (res.status === 200) {
-      setAlert({
-        open: true,
-        type: "success",
-        message: res?.message || "Sync started",
-      })
+      // setAlert({
+      //   open: true,
+      //   type: "success",
+      //   message: res?.message || "Sync started",
+      // })
       setSyncStatus(true)
       return
     } else {

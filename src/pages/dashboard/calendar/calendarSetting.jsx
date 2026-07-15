@@ -45,7 +45,7 @@ const CalendarSetting = () => {
 
             {/* Split layout: Vertical tabs on left, tab components on right */}
             <div className="grid grid-cols-1 md:grid-cols-12 gap-4 items-start">
-                <div className="md:col-span-2 bg-white p-4 rounded-lg shadow-sm border border-gray-200">
+                <div className="md:col-span-3 bg-white p-4 rounded-lg shadow-sm border border-gray-200">
                     <Tabs
                         tabsData={tabsData}
                         selectedTab={selectedTab}
@@ -54,7 +54,7 @@ const CalendarSetting = () => {
                         fontSize="15px"
                     />
                 </div>
-                <div className={`md:col-span-10 min-h-[400px] ${selectedTab === 2 ? "" : "bg-white p-6 rounded-lg shadow-sm border border-gray-200"}`}>
+                <div className={`md:col-span-9 min-h-[400px] ${selectedTab === 2 ? "" : "bg-white p-6 rounded-lg shadow-sm border border-gray-200"}`}>
                     {tabsData[selectedTab]?.component}
                 </div>
             </div>

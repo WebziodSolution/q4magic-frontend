@@ -8,6 +8,7 @@ import AlertDialog from '../../components/common/alertDialog/alertDialog';
 import { getSyncStatus, saveSyncStatus } from '../../service/syncStatus/syncStatusService';
 import { fetchAndSetSalesforceTokens } from '../../utils/salesforceTokenHelper';
 import { getUserDetails } from '../../utils/getUserDetails';
+import { removeUserSalesForceToken } from '../../service/customers/customersService';
 
 const UserInfoSkeleton = () => (
     <div className="bg-white rounded-2xl shadow-xl p-8 flex flex-col items-center max-w-sm w-full animate-pulse">
@@ -47,12 +48,14 @@ const Crm = ({ loadingMessage, setLoadingMessage, setLoading, setAlert, loading,
             const url = urlOverride || salesforceInstanceUrl;
 
             if (token && url) {
-                const userRes = await getUserInfo();
+                const userRes = await getUserInfo(token, url);
                 const data = userRes?.result?.data || null;
                 if (data) {
+                    initSalesForce()
                     setSalesforceUserDetails(data);
                     localStorage.setItem("salesforceUserData", JSON.stringify(data));
                     setSyncingPushStatus(true);
+                    await handleSyncData()
                 } else {
                     setSalesforceUserDetails(null)
                     localStorage.removeItem("salesforceUserData");
@@ -186,10 +189,8 @@ const Crm = ({ loadingMessage, setLoadingMessage, setLoading, setAlert, loading,
                                 type: "success",
                                 message: "Account successfully connected to Salesforce."
                             });
-
                             closePopup();
-                            await handleGetSalesForceUserInfo();
-                            await handleSyncData()
+                            await handleGetSalesForceUserInfo(token, instanceUrl);
                             setLoading(false);
                             setLoadingMessage(null)
                             return;
@@ -230,17 +231,25 @@ const Crm = ({ loadingMessage, setLoadingMessage, setLoading, setAlert, loading,
         }
     };
 
-    const handleLogout = () => {
+    const handleLogout = async () => {
         localStorage.removeItem("salesforceUserData");
         clearSalesforceTokens();
         setSalesforceUserDetails(null);
 
-        setAlert({
-            open: true,
-            type: "success",
-            message: "Logged out successfully from Salesforce."
-        });
-
+        const res = await removeUserSalesForceToken(userData?.userId)
+        if (res.status === 200) {
+            setAlert({
+                open: true,
+                type: "success",
+                message: "Logged out successfully from Salesforce."
+            });
+        } else {
+            setAlert({
+                open: true,
+                type: "error",
+                message: "Failed to disconnect."
+            });
+        }
         handleCloseDialog();
     };
 

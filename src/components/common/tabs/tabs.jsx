@@ -182,7 +182,7 @@ export const Tabs = ({ selectedTab, handleChange, tabsData, type = "default", ce
                   top: isVertical ? "50%" : "auto",
                   transform: isVertical ? "translateY(-50%)" : "translateX(-50%)",
                   height: isVertical ? "100%" : "3px",
-                  width: isVertical ? "3px" : "0%",
+                  width: isVertical ? "3px" : (isSelected ? "100%" : "0%"),
                   maxWidth: isVertical ? (isSelected ? "3px" : "0px") : "100%",
                   backgroundColor: "#6A3FAE",
                   transition: isVertical ? "max-width 0.3s ease-in-out" : "width 0.3s ease-in-out",
@@ -191,7 +191,7 @@ export const Tabs = ({ selectedTab, handleChange, tabsData, type = "default", ce
                 // Triggers the border to expand on hover
                 "&:hover::after": {
                   width: isVertical ? "3px" : "100%",
-                  maxWidth: "3px",
+                  maxWidth: isVertical ? "3px" : "100%",
                 }
               }}
             >

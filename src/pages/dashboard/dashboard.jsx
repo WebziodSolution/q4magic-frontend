@@ -366,7 +366,7 @@ const Dashboard = ({ filterStartDate, filterEndDate, salesforceUserDetails, sale
                                         >
                                             <td className="px-4 py-3 text-sm text-slate-700">{row.created_by || '—'}</td>
                                             <td className="px-4 py-3 text-sm text-slate-700">{row.account || '—'}</td>
-                                            <td className="px-4 py-3 text-sm font-semibold text-slate-800">{moneyLabel(ui.totalDealAmount) || '—'}</td>
+                                            <td className="px-4 py-3 text-sm font-semibold text-slate-800">{moneyLabel(row.totalDealAmount) || '—'}</td>
                                         </tr>
                                     ))}
                                 </tbody>
