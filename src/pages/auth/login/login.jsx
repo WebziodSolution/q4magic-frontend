@@ -111,7 +111,7 @@ const Login = ({ setAlert, loading, salesforceUserDetails, setSalesforceTokens, 
                 roleName: res?.data?.result?.roleName,
                 permissions: res?.data?.result?.permissions?.rolesActions,
                 subUser: res?.data?.result?.subUser,
-                name: res?.data?.result?.name
+                name: res?.data?.result?.name,
             };
             localStorage.setItem("userInfo", JSON.stringify(userdata));
             const tokens = await fetchAndSetSalesforceTokens(res?.data?.result?.userId);

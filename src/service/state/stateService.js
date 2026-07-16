@@ -3,7 +3,7 @@ import axiosInterceptor from "../axiosInterceptor/axiosInterceptor"
 
 export const getAllState = async () => {
     try {
-        const response = axiosInterceptor().get(`${stateURL}/get/all`)
+        const response = await axiosInterceptor().get(`${stateURL}/get/all`)
         return response
 
     } catch (error) {
@@ -13,7 +13,7 @@ export const getAllState = async () => {
 
 export const getAllStateByCountry = async (id) => {
     try {
-        const response = axiosInterceptor().get(`${stateURL}/getAllStateByCountry/${id}`)
+        const response = await axiosInterceptor().get(`${stateURL}/getAllStateByCountry/${id}`)
         return response
 
     } catch (error) {

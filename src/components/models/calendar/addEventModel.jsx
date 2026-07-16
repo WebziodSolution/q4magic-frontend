@@ -28,8 +28,9 @@ import DeleteEventAlert from './deleteEventAlert';
 import { useLocation, useParams } from 'react-router-dom';
 import { getAllOpportunitiesContact } from '../../../service/opportunities/opportunitiesContactService';
 import SelectMultiple from '../../common/select/selectMultiple';
-import { add, setHours } from 'date-fns';
 import { Autocomplete, Chip, TextField } from '@mui/material';
+import { getUserDetails } from '../../../utils/getUserDetails';
+import { getCustomer } from '../../../service/customers/customersService';
 
 const BootstrapDialog = styled(Components.Dialog)(({ theme }) => ({
     '& .MuiDialogContent-root': { padding: theme.spacing(2) },
@@ -127,6 +128,7 @@ const validateEmail = (email) => {
 };
 function AddEventModel({ setAlert, open, handleClose, slotInfo, handleGetAllEvents, thirdPartyCalendar, currentView }) {
     const theme = useTheme();
+    const userDetails = getUserDetails()
     const location = useLocation()
     const { opportunityId } = useParams()
     const [contacts, setContacts] = useState([]);
@@ -241,7 +243,25 @@ function AddEventModel({ setAlert, open, handleClose, slotInfo, handleGetAllEven
             if (slotInfo?.id) {
                 setValue('calTimeZone', data?.find((row) => row.value === convertAsiaKolkata(watch("calTimeZone")))?.id || null);
             } else {
-                setValue('calTimeZone', data?.find((row) => row.value === convertAsiaKolkata(userTimeZone))?.id || null);
+                if (userDetails?.userId) {
+                    const res = await getCustomer(userDetails?.userId)
+                    if (res?.data?.result) {
+                        if (res?.data?.result?.webConference) {
+                            const contentBlock = htmlToDraft(res?.data?.result?.webConference);
+                            const contentState = ContentState.createFromBlockArray(contentBlock.contentBlocks);
+                            setEditorState(EditorState.createWithContent(contentState));
+                            setValue("description", res?.data?.result?.webConference)
+                        } else {
+                            setEditorState(EditorState.createEmpty());
+                            setValue("description", "")
+                        }
+                        if (res?.data?.result?.timeZone) {
+                            setValue('calTimeZone', data?.find((row) => row.value === convertAsiaKolkata(res?.data?.result?.timeZone))?.id || null);
+                        } else {
+                            setValue('calTimeZone', data?.find((row) => row.value === convertAsiaKolkata(userTimeZone))?.id || null);
+                        }
+                    }
+                }
             }
         }
     };
@@ -348,8 +368,8 @@ function AddEventModel({ setAlert, open, handleClose, slotInfo, handleGetAllEven
 
     useEffect(() => {
         if (open) {
-            handleGetAllTimeZones();
             handleGetEvent();
+            handleGetAllTimeZones();
             handleGetAllOpportunitiesContact()
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -723,7 +743,7 @@ function AddEventModel({ setAlert, open, handleClose, slotInfo, handleGetAllEven
                                                 placeholder="Select timezone"
                                                 value={watch('calTimeZone') ? parseInt(watch('calTimeZone')) : null}
                                                 onChange={(_, newValue) => {
-                                                    if (newValue) {                                                        
+                                                    if (newValue) {
                                                         field.onChange(newValue.id);
                                                     }
                                                 }}

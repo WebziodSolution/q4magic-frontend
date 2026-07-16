@@ -30,6 +30,7 @@ import { deleteQuota, getAllCustomerQuotas } from "../../../service/customerQuot
 import Components from "../../../components/muiComponents/components";
 import AlertDialog from "../../../components/common/alertDialog/alertDialog";
 import AddQuotaModel from "../../../components/models/subUser/addQuotaModel";
+import { getAllSubscriptionRates } from "../../../service/subscriptionRates/subscriptionRatesService";
 
 const steps = ["", "", "", "", ""];
 
@@ -119,6 +120,7 @@ const Register = ({ setAlert, setLoading }) => {
     const fetchLogoRef = useRef(null);
 
     const [quota, setQuota] = useState([])
+    const [subscriptionRates, setSubscriptionRates] = useState([])
     const [dialog, setDialog] = useState({ open: false, title: '', message: '', actionButtonText: '' });
     const [selectedQuotaId, setSelectedQuotaId] = useState(null)
     const [openModel, setOpenModel] = useState(false)
@@ -131,6 +133,7 @@ const Register = ({ setAlert, setLoading }) => {
         formState: { errors },
     } = useForm({
         defaultValues: {
+            planId: "",
             subscribeToNewsletter: true,
             billingAddressSameAsPrimary: true,
             loginPreference: "",
@@ -291,7 +294,7 @@ const Register = ({ setAlert, setLoading }) => {
     }
 
     const handleGetAllBillingStatesByCountryId = async (id) => {
-        if (activeStep === 3) {
+        if (activeStep === 2) {
             const res = await getAllStateByCountry(id)
             const data = res?.data?.result?.map((item) => {
                 return {
@@ -409,12 +412,21 @@ const Register = ({ setAlert, setLoading }) => {
         }
     }
 
+    const handleGetAllSubscriptionRates = async () => {
+        const res = await getAllSubscriptionRates()
+        const rates = res?.result || res?.data?.result || res || [];
+        setSubscriptionRates(rates);
+        // if (rates.length > 0 && !watch("planId")) {
+        //     setValue("planId", rates[0].id);
+        // }
+    }
+
     useClickOutside(logoMenuRef, () => setIsLogoMenuOpen(false), isLogoMenuOpen);
     useClickOutside(uploadLogoRef, () => setIsUploadLogoOpen(false), isUploadLogoOpen);
 
     const onSubmit = async (data) => {
         if (activeStep === 0) {
-            if (validEmail && validUsername && passwordError.every((error) => !error.showError)) {
+            if (data.planId && validEmail && validUsername && passwordError.every((error) => !error.showError)) {
                 setActiveStep((prev) => prev + 1);
             }
         }
@@ -540,6 +552,7 @@ const Register = ({ setAlert, setLoading }) => {
         if (Cookies.get('authToken')) {
             navigate("/dashboard");
         }
+        handleGetAllSubscriptionRates()
         handleGetAllRoles();
     }, [])
 
@@ -594,9 +607,53 @@ const Register = ({ setAlert, setLoading }) => {
                             activeStep === 0 && (
                                 <div className="flex justify-center">
                                     <div className="min-w-80">
-                                        <p className="text-gray-700 text-base font-medium mb-6">
-                                            Plan: <span className="text-[#44288E] font-bold">360Pipe</span> &nbsp;&nbsp;<span className="text-[#44288E] font-bold">$29.95/month</span>.
-                                        </p>
+                                        <Controller
+                                            name="planId"
+                                            control={control}
+                                            rules={{ required: "Please select a plan" }}
+                                            render={({ field }) => (
+                                                <div className="mb-6">
+                                                    {/* <p className="text-gray-700 text-sm font-semibold mb-3 text-left">Select Subscription Plan *</p> */}
+                                                    {subscriptionRates.length === 0 ? (
+                                                        <div className="p-4 border border-gray-200 rounded-xl bg-gray-50 animate-pulse flex justify-between items-center">
+                                                            <div className="h-4 bg-gray-200 rounded w-1/3"></div>
+                                                            <div className="h-4 bg-gray-200 rounded w-1/4"></div>
+                                                        </div>
+                                                    ) : (
+                                                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 animate-fadeIn">
+                                                            {subscriptionRates.map((plan) => {
+                                                                const isSelected = field.value === plan.id;
+                                                                return (
+                                                                    <div
+                                                                        key={plan.id}
+                                                                        onClick={() => field.onChange(plan.id)}
+                                                                        className={`cursor-pointer p-3 border-2 rounded-xl transition-all flex flex-col justify-between text-left ${isSelected
+                                                                            ? "border-[#44288E] bg-[#44288E]/5 shadow-sm"
+                                                                            : "border-gray-200 hover:border-gray-300 hover:bg-gray-50 bg-white"
+                                                                            }`}
+                                                                    >
+                                                                        <div className="flex items-center justify-between mb-1 gap-2">
+                                                                            <span className={`text-xs font-bold ${isSelected ? "text-[#44288E]" : "text-gray-900"}`}>
+                                                                                {plan.licenseType}
+                                                                            </span>
+                                                                            <div className={`h-4 w-4 shrink-0 rounded-full border flex items-center justify-center ${isSelected ? "border-[#44288E] bg-[#44288E]" : "border-gray-300"}`}>
+                                                                                {isSelected && <div className="h-1.5 w-1.5 rounded-full bg-white" />}
+                                                                            </div>
+                                                                        </div>
+                                                                        <span className="text-sm font-extrabold text-[#44288E]">
+                                                                            ${plan.amount} <span className="text-[10px] font-normal text-gray-500">/mo</span>
+                                                                        </span>
+                                                                    </div>
+                                                                );
+                                                            })}
+                                                        </div>
+                                                    )}
+                                                    {errors?.planId && (
+                                                        <p className="text-red-500 text-xs mt-1 text-left">{errors.planId.message}</p>
+                                                    )}
+                                                </div>
+                                            )}
+                                        />
                                         <div className="grid grid-cols-1 gap-4">
                                             <div>
                                                 <Controller
@@ -1105,7 +1162,7 @@ const Register = ({ setAlert, setLoading }) => {
                                                         render={({ field }) => (
                                                             <Select
                                                                 options={calendarType}
-                                                                label="Sales Manager Calendar Type"
+                                                                label="Calendar Type"
                                                                 placeholder="Select calendar type"
                                                                 value={parseInt(watch("calendarYearType")) || null}
                                                                 onChange={(_, newValue) => field.onChange(newValue?.id || null)}

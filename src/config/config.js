@@ -73,4 +73,6 @@ export const notesURL = baseURL + '/notes'
 export const resultsURL = baseURL + '/results'
 export const activitiesURL = baseURL + '/activities'
 
+export const subscriptionRatesURL = baseURL + '/subscriptionRates'
+
 export const calenderName = '360Pipe Calendar'

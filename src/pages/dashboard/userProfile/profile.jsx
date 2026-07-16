@@ -123,7 +123,6 @@ const Profile = ({ setAlert }) => {
         const res = await getCustomer(data?.userId);
         if (res?.data?.status === 200) {
             reset(res?.data?.result);
-            setValue("calendarYearType", res?.data?.result?.calendarYearType ? calendarType?.find((item) => item.title === res?.data?.result?.calendarYearType)?.id : null);
             if (res?.data?.result?.calendarYearType) {
                 setValue("startEvalPeriod", res?.data?.result?.startEvalPeriod)
                 setValue("endEvalPeriod", res?.data?.result?.endEvalPeriod)
@@ -425,7 +424,7 @@ const Profile = ({ setAlert }) => {
                                 render={({ field }) => (
                                     <Select
                                         options={calendarType}
-                                        label="Sales Manager Calendar Type"
+                                        label="Calendar Type"
                                         placeholder="Select calendar type"
                                         value={parseInt(watch("calendarYearType")) || null}
                                         onChange={(_, newValue) => field.onChange(newValue?.id || null)}
