@@ -416,9 +416,10 @@ const Register = ({ setAlert, setLoading }) => {
         const res = await getAllSubscriptionRates()
         const rates = res?.result || res?.data?.result || res || [];
         setSubscriptionRates(rates);
-        // if (rates.length > 0 && !watch("planId")) {
-        //     setValue("planId", rates[0].id);
-        // }
+        if (rates.length > 0 && localStorage.getItem("planId")) {
+            setValue("planId", parseInt(localStorage.getItem("planId")));
+            localStorage.removeItem("planId")
+        }
     }
 
     useClickOutside(logoMenuRef, () => setIsLogoMenuOpen(false), isLogoMenuOpen);

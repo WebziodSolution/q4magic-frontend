@@ -72,6 +72,7 @@ export const meetingSummaryURL = baseURL + '/meetingSummary'
 export const notesURL = baseURL + '/notes'
 export const resultsURL = baseURL + '/results'
 export const activitiesURL = baseURL + '/activities'
+export const performanceURL = baseURL + '/performance'
 
 export const subscriptionRatesURL = baseURL + '/subscriptionRates'
 

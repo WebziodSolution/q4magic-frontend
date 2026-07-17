@@ -1,6 +1,9 @@
 import React, { useEffect, useState, useMemo } from 'react';
 import { getAllActivities } from '../../../service/results/results';
 import CustomIcons from '../../../components/common/icons/CustomIcons';
+import { connect } from 'react-redux';
+import { getPerformanceByCustomerId } from '../../../service/performance/performanceService';
+import { userTimeZone } from '../../../service/common/commonService';
 
 const getInitials = (name) => {
     if (!name) return "";
@@ -51,8 +54,9 @@ const ActivityCard = ({ title, icon, value, percentage, progressPercent, fillCol
     </div>
 );
 
-const Activities = () => {
+const Activities = ({ filterStartDate, filterEndDate }) => {
     const [activities, setActivities] = useState([]);
+    const [performanceData, setPerformanceData] = useState(null);
 
     const handleGetActivities = async () => {
         const res = await getAllActivities();
@@ -65,10 +69,31 @@ const Activities = () => {
         }
     };
 
+    const handleGetPerformanceByCustomerId = async () => {
+        try {
+            const params = new URLSearchParams();
+            if (filterStartDate) {
+                params.append("startDate", filterStartDate);
+            }
+            if (filterEndDate) {
+                params.append("endDate", filterEndDate);
+            }
+            params.append("timeZone", userTimeZone)
+            const res = await getPerformanceByCustomerId(params);
+            setPerformanceData(res?.result || null);
+        } catch (e) {
+            console.log("Error", e);
+        }
+    };
+
     useEffect(() => {
         document.title = "Activities - 360Pipe";
-        handleGetActivities();
+        handleGetActivities()
     }, []);
+
+    useEffect(() => {
+        handleGetPerformanceByCustomerId();
+    }, [filterStartDate, filterEndDate])
 
     // Compute totals for Hunter/Farmer card
     const totals = useMemo(() => {
@@ -86,25 +111,25 @@ const Activities = () => {
                 <ActivityCard
                     title="Meetings"
                     icon={<CustomIcons iconName="fa-solid fa-bolt" css="h-5 w-5 text-[#44288E]" />}
-                    value="25"
-                    percentage="50%"
-                    progressPercent="50%"
+                    value={performanceData?.totalMettings}
+                    percentage="0%"
+                    progressPercent="0%"
                     fillColor="bg-[#44288E]"//#6D28D9
                     railColor="bg-[#DDD6FE]"
-                    leftLabel="50" leftSubLabel="Actual" leftLabelColor="text-[#44288E] font-bold"
-                    rightLabel="50" rightSubLabel="Goal" rightLabelColor="text-[#44288E] font-bold"
+                    leftLabel="0" leftSubLabel="Actual" leftLabelColor="text-[#44288E] font-bold"
+                    rightLabel="0" rightSubLabel="Goal" rightLabelColor="text-[#44288E] font-bold"
                 />
 
                 <ActivityCard
                     title="Onsite Intensity"
                     icon={<CustomIcons iconName="fa-solid fa-map-location-dot" css="h-5 w-5 text-[#44288E]" />}
-                    value="8"
-                    percentage="32%"
-                    progressPercent="32%"
+                    value={performanceData?.onsiteCount + performanceData?.virtualCount}
+                    percentage={`${Math.round((performanceData?.onsiteCount / (performanceData?.onsiteCount + performanceData?.virtualCount)) * 100)}%`}
+                    progressPercent={`${Math.round((performanceData?.onsiteCount / (performanceData?.onsiteCount + performanceData?.virtualCount)) * 100)}%`}
                     fillColor="bg-[#44288E]"
                     railColor="bg-[#DDD6FE]"
-                    leftLabel="8" leftSubLabel="Onsite" leftLabelColor="text-[#44288E] font-bold"
-                    rightLabel="17" rightSubLabel="Virtual" rightLabelColor="text-[#44288E] font-bold"
+                    leftLabel={performanceData?.onsiteCount} leftSubLabel="Onsite" leftLabelColor="text-[#44288E] font-bold"
+                    rightLabel={performanceData?.virtualCount} rightSubLabel="Virtual" rightLabelColor="text-[#44288E] font-bold"
                 />
 
                 <ActivityCard
@@ -186,4 +211,9 @@ const Activities = () => {
     );
 };
 
-export default Activities;
+const mapStateToProps = (state) => ({
+    filterStartDate: state.common.filterStartDate,
+    filterEndDate: state.common.filterEndDate,
+});
+
+export default connect(mapStateToProps, null)(Activities);
