@@ -213,3 +213,12 @@ export const removeUserSalesForceToken = async (id) => {
         console.log(error)
     }
 }
+
+export const saveDefaultCalendar = async (defaultCalendar) => {
+    try {
+        const response = await axiosInterceptor().post(`${customersURL}/saveDefaultCalendar`, { defaultCalendar })
+        return response.data
+    } catch (error) {
+        console.log(error)
+    }
+}

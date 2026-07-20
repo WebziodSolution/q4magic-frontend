@@ -7,7 +7,7 @@ import Checkbox from '../../../../components/common/checkBox/checkbox';
 import Input from '../../../../components/common/input/input';
 import Button from '../../../../components/common/buttons/button';
 import { getUserDetails } from '../../../../utils/getUserDetails';
-import { getCustomer, saveMailNotification, saveTimeZone, saveWebConference } from '../../../../service/customers/customersService';
+import { getCustomer, saveDefaultCalendar, saveMailNotification, saveTimeZone, saveWebConference } from '../../../../service/customers/customersService';
 import { getTimeZones } from '../../../../service/timeZones/timeZoneService';
 import { userTimeZone } from '../../../../service/common/commonService';
 import { setAlert } from '../../../../redux/commonReducers/commonReducers';
@@ -61,6 +61,7 @@ const CalendarGeneralSetting = () => {
                         const dbTz = customerRes?.data?.result?.timeZone;
                         const dbWebConferenceLink = customerRes?.data?.result?.webConferenceLink;
                         const emailNotification = customerRes?.data?.result?.emailNotification;
+                        const defaultCalendar = customerRes?.data?.result?.defaultCalendar;
 
                         if (dbTz) {
                             initialTzVal = dbTz;
@@ -70,6 +71,9 @@ const CalendarGeneralSetting = () => {
                         }
                         if (emailNotification) {
                             setSelectedNotifications(emailNotification?.split(",").map(Number));
+                        }
+                        if (defaultCalendar) {
+                            setDefaultCalendar(defaultCalendar);
                         }
                     }
                 } catch (err) {
@@ -171,10 +175,23 @@ const CalendarGeneralSetting = () => {
     };
 
     // Default Calendar selection handler: Logs selection change
-    const handleDefaultCalendarChange = (e) => {
+    const handleDefaultCalendarChange = async (e) => {
         const val = e.target.value;
         setDefaultCalendar(val);
-        console.log("Selected Default Calendar:", { defaultCalendar: val });
+        const res = await saveDefaultCalendar(val);
+        if (res.status === 200) {
+            dispatch(setAlert({
+                open: true,
+                type: "success",
+                message: "Save Default Calendar Successfully"
+            }));
+        } else {
+            dispatch(setAlert({
+                open: true,
+                type: "success",
+                message: "Fail to save default calendar"
+            }));
+        }
     };
 
     return (
