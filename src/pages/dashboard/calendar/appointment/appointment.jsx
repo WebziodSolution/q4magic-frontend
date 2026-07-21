@@ -21,8 +21,6 @@ import { createTheme, ThemeProvider, useTheme } from '@mui/material';
 import { freeSlotList, saveAppointment } from '../../../../service/calendar/calendarAppointment/calendarAppointmentService';
 import { connect } from 'react-redux';
 import { setAlert } from '../../../../redux/commonReducers/commonReducers';
-// eslint-disable-next-line no-unused-vars
-import { saveEvents } from '../../../../service/calendar/calendarService';
 const formatDuration = (hours, minutes) => {
     if (hours && minutes) {
         const pad = (num) => String(num).padStart(2, '0');
@@ -458,6 +456,11 @@ const Appointment = ({ setAlert }) => {
                                         )}
                                     />
                                 </div>
+                                {teamEmails?.length === 0 && (
+                                    <p className="text-red-500 text-sm font-medium text-center mt-2">
+                                        The team has no members, Members are required.
+                                    </p>
+                                )}
                             </div>
                         )
                     }
@@ -769,7 +772,7 @@ const Appointment = ({ setAlert }) => {
                                     }
 
                                     <div>
-                                        <Button type="submit" startIcon={activeStep === 4 ? <CustomIcons iconName="fa-regular fa-calendar-check" css="text-gray-600 text-sm" /> : null} text={activeStep === 4 ? "SCHEDULE MEETING" : "Next"} />
+                                        <Button type="submit" disabled={activeStep === 2 ? events?.length === 0 : activeStep === 1 ? teamEmails?.length === 0 : false} startIcon={activeStep === 4 ? <CustomIcons iconName="fa-regular fa-calendar-check" css="text-gray-600 text-sm" /> : null} text={activeStep === 4 ? "SCHEDULE MEETING" : "Next"} />
                                     </div>
                                 </div>
                             </div>
@@ -782,49 +785,3 @@ const Appointment = ({ setAlert }) => {
 };
 
 export default connect(null, { setAlert })(Appointment);
-
-
-// {
-//     "calAetId": 11,
-//     "title": "Jay Patel",
-//     "description": "360pipe meeting",
-//     "start": "07/16/2026 10:00:00",
-//     "end": "07/16/2026 11:15:00",
-//     "calTimeZone": "Asia/Calcutta",
-//     "calAttendees": "{\"attendees\":[\"jay@ematrixinfotech.com\"]}",
-//     "slotMember": "JWf2",
-//     "slotTimeMinus": 75,
-//     "contactList": [],
-//     "currentDateYN": "N",
-//     "memTimeZone": "Asia/Calcutta"
-// }
-
-// {
-//     "calAetId": 1,
-//     "title": "Jay Patel",
-//     "description": "360pipe meeting",
-//     "start": "07/16/2026 10:00:00",
-//     "end": "07/16/2026 11:15:00",
-//     "calTimeZone": "Asia/Calcutta",
-//     "calAttendees": "{\"attendees\":[\"rajan@ematrixinfotech.com\"]}",
-//     "slotMember": "MzYy",
-//     "slotTimeMinus": 75,
-//     "contactList": [],
-//     "currentDateYN": "N",
-//     "memTimeZone": "Asia/Calcutta"
-// }
-
-// {
-//     "calAetId": 11,
-//         "title": "Jay Patel",
-//             "description": "",
-//                 "start": "07/15/2026 12:30:00",
-//                     "end": "07/15/2026 13:45:00",
-//                         "calTimeZone": "Asia/Calcutta",
-//                             "calAttendees": "{\"attendees\":[\"rajan@ematrixinfotech.com\",\"nishit@ematrixinfotech.com\",\"jay@ematrixinfotech.com\"]}",
-//                                 "slotMember": "JWf2",
-//                                     "slotTimeMinus": 75,
-//                                         "contactList": [],
-//                                             "currentDateYN": "N",
-//                                                 "memTimeZone": "Asia/Calcutta"
-// }

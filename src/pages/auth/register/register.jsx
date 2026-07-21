@@ -31,8 +31,9 @@ import Components from "../../../components/muiComponents/components";
 import AlertDialog from "../../../components/common/alertDialog/alertDialog";
 import AddQuotaModel from "../../../components/models/subUser/addQuotaModel";
 import { getAllSubscriptionRates } from "../../../service/subscriptionRates/subscriptionRatesService";
+import { createTeam, updateTeam } from "../../../service/teamDetails/teamDetailsService";
 
-const steps = ["", "", "", "", ""];
+const steps = ["", "", "", "", "", ""];
 
 const calendarType = [
     { id: 1, title: "Calendar Year" },
@@ -182,6 +183,8 @@ const Register = ({ setAlert, setLoading }) => {
             brandName: "",
             brandLogo: "",
             websiteUrl: "",
+            name: "",
+            teamId: null
         },
     });
 
@@ -490,6 +493,35 @@ const Register = ({ setAlert, setLoading }) => {
             }
         }
         else if (activeStep === 4) {
+            if (data.name !== null && data.name !== "") {
+                const resdata = {
+                    name: data.name,
+                    teamId: data.teamId,
+                    createdBy: parseInt(watch("cusId")),
+                }
+                if (resdata?.teamId) {
+                    const res = await updateTeam(resdata?.teamId, resdata)
+                    if (res.status === 200) {
+                        setActiveStep((prev) => prev + 1);
+                    } else {
+                        setLoading(false);
+                        setAlert({ open: true, type: "error", message: res?.result?.message || "Server error" })
+                    }
+                    return
+                }
+                const res = await createTeam(resdata)
+                if (res.status === 201) {
+                    setValue("teamId", res?.result?.id)
+                    setActiveStep((prev) => prev + 1);
+                } else {
+                    setLoading(false);
+                    setAlert({ open: true, type: "error", message: res?.message || "Server error" })
+                }
+            } else {
+                setActiveStep((prev) => prev + 1);
+            }
+        }
+        else if (activeStep === 5) {
             setLoading(true);
             const newData = {
                 id: watch("brandId"),
@@ -518,7 +550,7 @@ const Register = ({ setAlert, setLoading }) => {
                     setAlert({ open: true, message: res.data.message, type: "error" })
                 }
             }
-        } else if (activeStep === 5) {
+        } else if (activeStep === 6) {
             // navigate("/login")
             let newData = {
                 email: watch("emailAddress"),
@@ -541,7 +573,7 @@ const Register = ({ setAlert, setLoading }) => {
                 navigate("/dashboard")
                 // setAlert({ open: true, type: "success", message: res?.data?.message || "Login successful" })
             } else {
-                setAlert({ open: true, type: "error", message: res?.data?.result?.error || res?.data?.msg || "Server error" })
+                setAlert({ open: true, type: "error", message: res?.data?.result?.message || "Server error" })
             }
         }
         else {
@@ -1469,6 +1501,30 @@ const Register = ({ setAlert, setLoading }) => {
                                 <>
                                     <div>
                                         <p className="text-center text-lg md:text-xl text-black my-5 font-semibold">
+                                            Tell Us Your Team Name
+                                        </p>
+                                    </div>
+                                    <div className='w-full'>
+                                        <Controller
+                                            name="name"
+                                            control={control}
+                                            render={({ field }) => (
+                                                <Input
+                                                    {...field}
+                                                    label="Team Name"
+                                                    type={`text`}
+                                                />
+                                            )}
+                                        />
+                                    </div>
+                                </>
+                            )
+                        }
+                        {
+                            activeStep === 5 && (
+                                <>
+                                    <div>
+                                        <p className="text-center text-lg md:text-xl text-black my-5 font-semibold">
                                             What is your business name, brand name and brand website?
                                         </p>
                                     </div>
@@ -1553,7 +1609,7 @@ const Register = ({ setAlert, setLoading }) => {
                             )
                         }
                         {
-                            activeStep === 5 && (
+                            activeStep === 6 && (
                                 <>
                                     <div>
                                         <p className="text-center text-lg md:text-xl text-black my-5 font-semibold capitalize">
@@ -1583,7 +1639,7 @@ const Register = ({ setAlert, setLoading }) => {
                         <div className="mt-6">
                             <div className="flex justify-center items-center gap-3">
                                 {
-                                    activeStep !== 5 && (
+                                    activeStep !== 6 && (
                                         <div>
                                             <Button type="button" onClick={() => handleBack()} text={"Back"} />
                                         </div>
@@ -1591,7 +1647,7 @@ const Register = ({ setAlert, setLoading }) => {
                                 }
 
                                 <div>
-                                    <Button type="submit" text={activeStep === 5 ? "Let's Go" : "next"} />
+                                    <Button type="submit" text={activeStep === 6 ? "Let's Go" : "next"} />
                                 </div>
                             </div>
                             {
