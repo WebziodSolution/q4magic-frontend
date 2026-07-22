@@ -1,5 +1,4 @@
-import React, { useEffect, useState, useMemo } from 'react';
-import { getAllActivities } from '../../../service/results/results';
+import React, { useEffect, useState } from 'react';
 import CustomIcons from '../../../components/common/icons/CustomIcons';
 import { connect } from 'react-redux';
 import { getPerformanceByCustomerId } from '../../../service/performance/performanceService';
@@ -55,19 +54,9 @@ const ActivityCard = ({ title, icon, value, percentage, progressPercent, fillCol
 );
 
 const Activities = ({ filterStartDate, filterEndDate }) => {
-    const [activities, setActivities] = useState([]);
     const [performanceData, setPerformanceData] = useState(null);
-
-    const handleGetActivities = async () => {
-        const res = await getAllActivities();
-        if (res?.data?.status === 200) {
-            const data = res?.data?.result?.map((item, index) => ({
-                ...item,
-                rowId: index + 1,
-            }));
-            setActivities(data || []);
-        }
-    };
+    const [hunterCount, setHunterCount] = useState(0);
+    const [farmerCount, setFarmerCount] = useState(0);
 
     const handleGetPerformanceByCustomerId = async () => {
         try {
@@ -81,28 +70,32 @@ const Activities = ({ filterStartDate, filterEndDate }) => {
             params.append("timeZone", userTimeZone)
             const res = await getPerformanceByCustomerId(params);
             setPerformanceData(res?.result || null);
+            let tempHunter = 0;
+            let tempFarmer = 0;
+            res?.result?.data?.forEach((row) => {
+                const newM = row.newMettings || 0;
+                const oldM = row.oldMettings || 0;
+                if (newM > oldM) {
+                    tempHunter++;
+                } else if (oldM > newM) {
+                    tempFarmer++;
+                }
+            });
+            setHunterCount(tempHunter);
+            setFarmerCount(tempFarmer);
         } catch (e) {
-            console.log("Error", e);
+            setHunterCount(0);
+            setFarmerCount(0);
         }
     };
 
     useEffect(() => {
         document.title = "Activities - 360Pipe";
-        handleGetActivities()
     }, []);
 
     useEffect(() => {
         handleGetPerformanceByCustomerId();
     }, [filterStartDate, filterEndDate])
-
-    // Compute totals for Hunter/Farmer card
-    const totals = useMemo(() => {
-        const hunter = activities.reduce((sum, item) => sum + (item.newMeetingCount || 0), 0);
-        const farmer = activities.reduce((sum, item) => sum + (item.oldMeetingCount || 0), 0);
-        const total = hunter + farmer;
-        const hunterPct = total ? (hunter / total) * 100 : 0;
-        return { hunter, farmer, total, hunterPct };
-    }, [activities]);
 
     return (
         <div className="py-6 bg-[#F8FAFF]">
@@ -135,13 +128,13 @@ const Activities = ({ filterStartDate, filterEndDate }) => {
                 <ActivityCard
                     title="Hunter / Farmer"
                     icon={<CustomIcons iconName="fa-solid fa-handshake" css="h-5 w-5 text-[#44288E]" />}
-                    value={totals.hunter}
-                    percentage={`${Math.round(totals.hunterPct)}%`}
-                    progressPercent={`${totals.hunterPct}%`}
+                    value={hunterCount}
+                    percentage={`${(hunterCount + farmerCount) > 0 ? Math.round((hunterCount / (hunterCount + farmerCount)) * 100) : 0}%`}
+                    progressPercent={`${(hunterCount + farmerCount) > 0 ? Math.round((hunterCount / (hunterCount + farmerCount)) * 100) : 0}%`}
                     fillColor="bg-[#65B79F]"
-                    railColor="bg-[#44288E]"
-                    leftLabel={totals.hunter} leftSubLabel="Hunter" leftLabelColor="text-[#44288E] font-bold"
-                    rightLabel={totals.farmer} rightSubLabel="Farmer" rightLabelColor="text-[#44288E] font-bold"
+                    railColor="bg-[#DDD6FE]"
+                    leftLabel={hunterCount} leftSubLabel="Hunter" leftLabelColor="text-[#44288E] font-bold"
+                    rightLabel={farmerCount} rightSubLabel="Farmer" rightLabelColor="text-[#44288E] font-bold"
                 />
             </div>
 
@@ -174,8 +167,8 @@ const Activities = ({ filterStartDate, filterEndDate }) => {
                         </tr>
                     </thead>
                     <tbody>
-                        {activities.map((row, index) => {
-                            const isLastRow = index === activities.length - 1;
+                        {performanceData?.data?.map((row, index) => {
+                            const isLastRow = index === performanceData.data.length - 1;
                             return (
                                 <tr
                                     key={row.rowId || index}
@@ -183,23 +176,23 @@ const Activities = ({ filterStartDate, filterEndDate }) => {
                                 >
                                     <td className="py-4 px-6 flex items-center gap-4 text-[#6B7280]">
                                         <div
-                                            className={`w-10 h-10 rounded-full flex items-center justify-center text-white font-medium ${getAvatarColor(row.rep_name)}`}
+                                            className={`w-10 h-10 rounded-full flex items-center justify-center text-white font-medium ${getAvatarColor(row.customerName)}`}
                                         >
-                                            {getInitials(row.rep_name)}
+                                            {getInitials(row.customerName)}
                                         </div>
-                                        <span className="text-base text-[#111827]">{row.rep_name || '—'}</span>
+                                        <span className="text-base text-[#111827]">{row.customerName || '—'}</span>
                                     </td>
                                     <td className="py-4 px-6 text-[#111827] font-semibold text-lg text-center">
-                                        {row.newMeetingCount || 0}
+                                        {row.newMettings || 0}
                                     </td>
                                     <td className="py-4 px-6 text-[#111827] font-semibold text-lg text-center">
-                                        {row.oldMeetingCount || 0}
+                                        {row.oldMettings || 0}
                                     </td>
                                     <td className="py-4 px-6 text-[#6B7280] font-medium text-lg text-center">
-                                        ({row.onsite || 0})
+                                        ({row.onsiteCount || 0})
                                     </td>
                                     <td className="py-4 px-6 font-bold text-lg text-center" style={{ backgroundColor: '#F5F3FF', color: '#111827' }}>
-                                        {(row.newMeetingCount || 0) + (row.oldMeetingCount || 0)}
+                                        {row.totalMettings || 0}
                                     </td>
                                 </tr>
                             );

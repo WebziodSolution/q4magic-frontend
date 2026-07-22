@@ -520,7 +520,7 @@ function AddEventModel({ setAlert, open, handleClose, slotInfo, handleGetAllEven
                 <Components.DialogTitle sx={{ m: 0, p: 2, color: theme.palette.text.primary }} id="customized-dialog-title">
                     {
                         location?.pathname === "/dashboard/calendar" ? (
-                            watch('id') ? 'Update Event' : 'Add Event'
+                            watch('id') ? 'Update Meeting' : 'Add Meeting'
                         ) : (
                             watch('id') ? 'Update Meeting' : 'Add Meeting'
                         )

@@ -19,7 +19,7 @@ import CustomIcons from '../../../components/common/icons/CustomIcons';
 import Header from '../../landingPage/header';
 import CopyRight from '../../landingPage/copyRight';
 
-import { checkValidSubUserToken, updateCustomer, userLogin, verifyUsername } from '../../../service/customers/customersService';
+import { checkValidSubUserToken, updateCustomer, updateSubUser, userLogin, verifyUsername } from '../../../service/customers/customersService';
 import { addUser, updateUser } from '../../../service/auth/authIdAccountService';
 import { getCurrentLocation } from '../../../service/common/radarService';
 import { capitalize, securityQuestions } from '../../../service/common/commonService';
@@ -88,6 +88,7 @@ const SubUserRegister = ({ setAlert, setLoading }) => {
             answer1: "",
             answer2: "",
             answer3: "",
+            type: "Subuser"
         },
     });
 
@@ -355,7 +356,7 @@ const SubUserRegister = ({ setAlert, setLoading }) => {
                 question2: securityQuestions.find(q => q.id === parseInt(data.question2))?.title || "",
                 question3: securityQuestions.find(q => q.id === parseInt(data.question3))?.title || "",
             }
-            const res = await updateCustomer(watch("id"), resetData);
+            const res = await updateSubUser(watch("id"), resetData);
             if (res.data.status === 200) {
                 setLoading(false);
                 let newData = {
