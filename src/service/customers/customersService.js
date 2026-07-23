@@ -222,3 +222,12 @@ export const saveDefaultCalendar = async (defaultCalendar) => {
         console.log(error)
     }
 }
+
+export const setCustomerMeetingQuota = async (quota) => {
+    try {
+        const response = await axiosInterceptor().post(`${customersURL}/meetingquota?quota=${quota}`)
+        return response.data
+    } catch (error) {
+        console.log(error)
+    }
+}

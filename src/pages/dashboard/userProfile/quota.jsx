@@ -6,13 +6,15 @@ import CustomIcons from '../../../components/common/icons/CustomIcons';
 import AddQuotaModel from '../../../components/models/subUser/addQuotaModel';
 import dayjs from 'dayjs';
 import AlertDialog from '../../../components/common/alertDialog/alertDialog';
-import { getCustomer } from '../../../service/customers/customersService';
+import { getCustomer, setCustomerMeetingQuota } from '../../../service/customers/customersService';
 import { connect } from 'react-redux';
 import { setAlert } from '../../../redux/commonReducers/commonReducers';
+import Input from '../../../components/common/input/input';
 
 const Quota = ({ setAlert }) => {
     const userdata = getUserDetails();
     const [quota, setQuota] = useState([])
+    const [meetingQuota, setMeetingQuota] = useState("")
     const [dialog, setDialog] = useState({ open: false, title: '', message: '', actionButtonText: '' });
     const [selectedQuotaId, setSelectedQuotaId] = useState(null)
     const [openModel, setOpenModel] = useState(false)
@@ -58,6 +60,7 @@ const Quota = ({ setAlert }) => {
         if (userdata?.userId) {
             const response = await getCustomer(userdata?.userId);
             if (response?.data?.status === 200) {
+                setMeetingQuota(response?.data?.result?.meetingQuota ? parseInt(response?.data?.result?.meetingQuota) : "")
                 if (response?.data?.result?.calendarYearType) {
                     setStartEvalPeriod(response?.data?.result?.startEvalPeriod)
                     setEndEvalPeriod(response?.data?.result?.endEvalPeriod)
@@ -77,6 +80,25 @@ const Quota = ({ setAlert }) => {
             setQuota(res?.result)
         }
     }
+
+    const handleSetMeetingQuota = async () => {
+        const res = await setCustomerMeetingQuota(meetingQuota)
+        if (res.status === 200) {
+            handleGetUser();
+            setAlert({
+                open: true,
+                message: res?.message || "Meeting quota updated successfully",
+                type: "success"
+            });
+        } else {
+            setAlert({
+                open: true,
+                message: res?.message || "Failed to update meeting quota",
+                type: "error"
+            });
+        }
+    }
+
     useEffect(() => {
         handleGetUser()
         handleGetAllQuotas()
@@ -96,7 +118,7 @@ const Quota = ({ setAlert }) => {
                 </div>
 
                 {/* Table */}
-                <div className="border rounded-md overflow-hidden">
+                <div className="border rounded-md overflow-hidden mb-3">
                     <table className="w-full text-left border-collapse">
                         {/* Header */}
                         <thead className="sticky top-0 bg-white z-10">
@@ -150,6 +172,17 @@ const Quota = ({ setAlert }) => {
                         )}
                     </table>
                 </div>
+
+                <Input
+                    label={"Meeting Quota"}
+                    type="text"
+                    onChange={(e) => {
+                        const numericValue = e.target.value.replace(/[^0-9]/g, '');
+                        setMeetingQuota(numericValue)
+                    }}
+                    value={meetingQuota}
+                    onBlur={handleSetMeetingQuota}
+                />
             </div>
 
             <AddQuotaModel open={openModel} handleClose={handleCloseModel} customerId={userdata?.userId} id={selectedQuotaId} startEvalPeriod={startEvalPeriod} endEvalPeriod={endEvalPeriod} handleGetUser={handleGetUser} handleGetAllQuota={handleGetAllQuotas} />

@@ -1611,7 +1611,7 @@ const DealManagement = ({ setAlert, oppSelectedTabIndex, setOppSelectedTabIndex 
     return (
         <div className="px-4">
 
-            {opportunityId && (
+            {opportunityId ? (
                 <div className="mx-auto mb-4">
                     {oppSelectedTabIndex === 0 && (
                         <>
@@ -3177,7 +3177,11 @@ const DealManagement = ({ setAlert, oppSelectedTabIndex, setOppSelectedTabIndex 
                         handleClose={() => handleCloseDecisionMapDelete()}
                     />
                 </div>
-            )}
+            ) :
+                <div className="flex items-center justify-center mt-20 h-[20rem] bg-white border rounded-md">
+                    <p>No data available.</p>
+                </div>
+            }
         </div>
     );
 };

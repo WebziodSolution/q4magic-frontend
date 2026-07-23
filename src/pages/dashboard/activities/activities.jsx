@@ -105,12 +105,12 @@ const Activities = ({ filterStartDate, filterEndDate }) => {
                     title="Meetings"
                     icon={<CustomIcons iconName="fa-solid fa-bolt" css="h-5 w-5 text-[#44288E]" />}
                     value={performanceData?.totalMettings}
-                    percentage="0%"
-                    progressPercent="0%"
+                    percentage={`${Math.round((performanceData?.totalMettings / performanceData?.meetingQuota) * 100)}%`}
+                    progressPercent={`${Math.round((performanceData?.totalMettings / performanceData?.meetingQuota) * 100)}%`}
                     fillColor="bg-[#44288E]"//#6D28D9
                     railColor="bg-[#DDD6FE]"
-                    leftLabel="0" leftSubLabel="Actual" leftLabelColor="text-[#44288E] font-bold"
-                    rightLabel="0" rightSubLabel="Goal" rightLabelColor="text-[#44288E] font-bold"
+                    leftLabel={performanceData?.totalMettings} leftSubLabel="Actual" leftLabelColor="text-[#44288E] font-bold"
+                    rightLabel={performanceData?.meetingQuota} rightSubLabel="Goal" rightLabelColor="text-[#44288E] font-bold"
                 />
 
                 <ActivityCard

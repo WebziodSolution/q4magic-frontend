@@ -30,6 +30,9 @@ const UserProfile = () => {
                 {
                     label: 'Change Password', icon: <CustomIcons iconName="fa-solid fa-lock" />, component: <ChangePassword />
                 },
+                {
+                    label: 'Quota', icon: <CustomIcons iconName="fa-solid fa-credit-card" />, component: <Quota />
+                },
             ])
         } else {
             setTabsData([
