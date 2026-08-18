@@ -9,7 +9,7 @@ import Input from '../../../components/common/input/input';
 import { setAlert, setSyncingPushStatus } from '../../../redux/commonReducers/commonReducers';
 import CustomIcons from '../../../components/common/icons/CustomIcons';
 import Select from '../../common/select/select';
-import { createSubUser, getCustomer, sendRegisterInvitation, updateSubUser, verifyEmail } from '../../../service/customers/customersService';
+import { createSubUser, getAllSubUsers, getAllSubUsersWithParntSubUser, getCustomer, sendRegisterInvitation, updateSubUser, verifyEmail } from '../../../service/customers/customersService';
 import { getAllSubUserTypes } from '../../../service/subUserType/subUserTypeService';
 import DatePickerComponent from '../../common/datePickerComponent/datePickerComponent';
 import dayjs from 'dayjs';
@@ -109,6 +109,7 @@ function SubUserModel({ setSyncingPushStatus, setAlert, open, handleClose, id, h
     const [selectedQuotaId, setSelectedQuotaId] = useState(null)
     const [dialog, setDialog] = useState({ open: false, title: '', message: '', actionButtonText: '' });
     const [showCloseButton, setShowCloseButton] = useState(false)
+    const [customers, setCustomers] = useState([]);
 
     const {
         handleSubmit,
@@ -129,7 +130,7 @@ function SubUserModel({ setSyncingPushStatus, setAlert, open, handleClose, id, h
             username: "",
             password: "",
             calendarYearType: "",
-
+            reportTo: null,
             startEvalPeriod: null,
             endEvalPeriod: null,
 
@@ -207,7 +208,7 @@ function SubUserModel({ setSyncingPushStatus, setAlert, open, handleClose, id, h
             username: "",
             password: "",
             calendarYearType: "",
-
+            reportTo: null,
             startEvalPeriod: null,
             endEvalPeriod: null,
 
@@ -269,6 +270,7 @@ function SubUserModel({ setSyncingPushStatus, setAlert, open, handleClose, id, h
                 setValue("subUserTypeId", response?.data?.result?.subUserTypeId || "");
                 setValue("username", response?.data?.result?.username || "");
                 setValue("password", response?.data?.result?.password || "");
+                setValue("reportTo", response?.data?.result?.reportTo || "");
                 setValue("calendarYearType", response?.data?.result?.calendarYearType ? calendarType?.find((item) => item.title === response?.data?.result?.calendarYearType)?.id : null);
                 if (response?.data?.result?.calendarYearType) {
                     setValue("startEvalPeriod", response?.data?.result?.startEvalPeriod)
@@ -340,8 +342,22 @@ function SubUserModel({ setSyncingPushStatus, setAlert, open, handleClose, id, h
         }
     }
 
+    const handleGetAllCustomers = async () => {
+        if (open) {
+            const res = await getAllSubUsersWithParntSubUser()
+            const data = res?.result?.map((item) => {
+                return {
+                    id: item.id,
+                    title: item.username || item.firstName + ' ' + item.lastName,
+                    role: item.subUserTypeDto?.name || ''
+                }
+            })
+            setCustomers(data)
+        }
+    }
     useEffect(() => {
         setShowCloseButton(false)
+        handleGetAllCustomers()
         handleGetSubUserTypes();
         handleGetUser();
         handleGetUserQuota()
@@ -469,6 +485,7 @@ function SubUserModel({ setSyncingPushStatus, setAlert, open, handleClose, id, h
             calendarYearType: calendarType?.find((item) => item.id === watch("calendarYearType"))?.title || "",
             startEvalPeriod: watch("startEvalPeriod"),
             endEvalPeriod: watch("endEvalPeriod"),
+            reportTo: watch("reportTo") || null,
         }
 
         if ((id && watch("emailAddress") === emailAddress) || validEmail) {
@@ -729,6 +746,27 @@ function SubUserModel({ setSyncingPushStatus, setAlert, open, handleClose, id, h
                                     />
                                 </div>
 
+                                <div>
+                                    <Controller
+                                        name="reportTo"
+                                        control={control}
+                                        render={({ field }) => (
+                                            <Select
+                                                options={customers}
+                                                label={"Reports To"}
+                                                placeholder="Select member"
+                                                value={parseInt(watch("reportTo")) || null}
+                                                onChange={(_, newValue) => {
+                                                    if (newValue?.id) {
+                                                        field.onChange(newValue.id);
+                                                    } else {
+                                                        setValue("reportTo", null);
+                                                    }
+                                                }}
+                                            />
+                                        )}
+                                    />
+                                </div>
                                 {
                                     id && (
                                         <>

@@ -13,6 +13,7 @@ import PermissionWrapper from '../../components/common/permissionWrapper/Permiss
 import { deleteCustomer, getAllSubUsers, sendRegisterInvitation } from '../../service/customers/customersService';
 import SubUserModel from '../../components/models/subUser/subUserModel';
 import { Tooltip } from '@mui/material';
+import MemberReportHierarch from './memberReportHierarch';
 
 const Members = ({ setAlert, setSyncingPushStatus, syncingPullStatus }) => {
   const location = useLocation();
@@ -23,6 +24,8 @@ const Members = ({ setAlert, setSyncingPushStatus, syncingPullStatus }) => {
   const [invitationData, setInvitationData] = useState(null);
   const [inviteDialog, setInviteDialog] = useState({ open: false, title: '', message: '', actionButtonText: '' });
 
+  const [openHierarchy, setOpenHierarchy] = useState(false);
+  const [selectedCustomerId, setSelectedCustomerId] = useState(null);
 
   const handleClickOpen = (id = null) => {
     if (id) {
@@ -34,6 +37,16 @@ const Members = ({ setAlert, setSyncingPushStatus, syncingPullStatus }) => {
   const handleClose = () => {
     setOpen(false);
     setSelectedUserId(null);
+  }
+
+  const handleOpenHierarchy = (contactId) => {
+    setSelectedCustomerId(contactId);
+    setOpenHierarchy(true);
+  }
+
+  const handleCloseHierarchy = () => {
+    setSelectedCustomerId(null);
+    setOpenHierarchy(false);
   }
 
   const handleOpenInviteDialog = (data) => {
@@ -233,6 +246,13 @@ const Members = ({ setAlert, setSyncingPushStatus, syncingPullStatus }) => {
                   </Tooltip>
                 }
               />
+              <Tooltip title="Report-Hierarchy" arrow>
+                <div className='bg-gray-600 h-8 w-8 flex justify-center items-center rounded-full text-white'>
+                  <Components.IconButton onClick={() => handleOpenHierarchy(params.row.id)}>
+                    <CustomIcons iconName={'fa-solid fa-sitemap'} css='cursor-pointer text-white h-4 w-4' />
+                  </Components.IconButton>
+                </div>
+              </Tooltip>
             </div>
           </div>
         );
@@ -281,6 +301,7 @@ const Members = ({ setAlert, setSyncingPushStatus, syncingPullStatus }) => {
         handleClose={() => handleCloseInviteDialog()}
       />
       <SubUserModel open={open} handleClose={handleClose} id={selectedUserId} handleGetAllUsers={handleGetAllAccounts} />
+      <MemberReportHierarch open={openHierarchy} handleClose={handleCloseHierarchy} contactId={selectedCustomerId} />
     </div>
   )
 }

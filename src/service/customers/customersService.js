@@ -231,3 +231,23 @@ export const setCustomerMeetingQuota = async (quota) => {
         console.log(error)
     }
 }
+
+export const getMemberReportHierarchy = async (id) => {
+    try {
+        const response = await axiosInterceptor().get(`${customersURL}/getReportHierarch/${id}`)
+        return response.data
+
+    } catch (error) {
+        console.log(error)
+    }
+}
+
+export const getAllSubUsersWithParntSubUser = async () => {
+    try {
+        const response = await axiosInterceptor().get(`${customersURL}/getAllSubUsersWithParntSubUser`)
+        return response.data
+
+    } catch (error) {
+        console.log(error)
+    }
+}
