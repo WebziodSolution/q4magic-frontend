@@ -65,7 +65,8 @@ const Profile = ({ setAlert }) => {
                 title: item.cntName
             }
         })
-        setCountrys(data)
+        setCountrys(data?.filter((item) => item.id === 100 || item.id === 16))
+        handleGetAllStatesByCountryId(100)
     }
 
     const handleGetAllStatesByCountryId = async (id) => {

@@ -22,10 +22,11 @@ import CopyRight from '../../landingPage/copyRight';
 import { checkValidSubUserToken, updateCustomer, updateSubUser, userLogin, verifyUsername } from '../../../service/customers/customersService';
 import { addUser, updateUser } from '../../../service/auth/authIdAccountService';
 import { getCurrentLocation } from '../../../service/common/radarService';
-import { capitalize, securityQuestions } from '../../../service/common/commonService';
+import { capitalize, getStaticRolesWithPermissions, securityQuestions } from '../../../service/common/commonService';
 import Input from '../../../components/common/input/input';
 import Button from '../../../components/common/buttons/button';
 import Select from '../../../components/common/select/select';
+import { createSubUserTypes } from '../../../service/subUserType/subUserTypeService';
 
 const steps = ["", ""];
 
@@ -39,7 +40,7 @@ const SubUserRegister = ({ setAlert, setLoading }) => {
     const [showPasswordRequirement, setShowPasswordRequirement] = useState(false);
     const [finalUrl, setFinalUrl] = useState(null);
     // const [authOperationData, setAuthOperationData] = useState(null);
-    const [validUsername, setValidUsername] = useState(null);
+    const [validUsername, setValidUsername] = useState(true);
     const [isConfirmPasswordVisible, setIsConfirmPasswordVisible] = useState(false);
     const [stopRegisterProcess, setStopRegisterProcess] = useState(false);
 
@@ -359,6 +360,16 @@ const SubUserRegister = ({ setAlert, setLoading }) => {
             const res = await updateSubUser(watch("id"), resetData);
             if (res.data.status === 200) {
                 setLoading(false);
+                const roles = {
+                    userId: parseInt(watch("id")),
+                    data: getStaticRolesWithPermissions()
+                }
+                const roleRes = await createSubUserTypes(roles);
+                if (roleRes?.data?.status !== 201) {
+                    setLoading(false);
+                    setAlert({ open: true, message: roleRes?.data?.message || "Roles not created.", type: "error" })
+                    return;
+                }
                 let newData = {
                     email: watch("emailAddress"),
                     password: watch("password")

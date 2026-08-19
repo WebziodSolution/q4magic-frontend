@@ -10,7 +10,7 @@ import Checkbox from '../../components/common/checkBox/checkbox';
 import Input from '../../components/common/input/input';
 import CustomIcons from '../../components/common/icons/CustomIcons';
 
-const AddMemberRoles = () => {
+const AddMemberRoles = ({ setAlert }) => {
     const { id } = useParams();
     const navigate = useNavigate();
     const [headers, setHeaders] = useState([]);
@@ -137,35 +137,41 @@ const AddMemberRoles = () => {
 
     const handleSave = async (data) => {
         delete data.rolesActions
-        if (id) {
-            const newData = {
-                name: data.name,
-                id: id,
-                rolesActions: {
-                    functionalities: data.functionalities
+        try {
+            if (id) {
+                const newData = {
+                    name: data.name,
+                    id: id,
+                    rolesActions: {
+                        functionalities: data.functionalities
+                    }
+                }
+                const res = await updateSubUserType(id, newData);
+                if (res.data.status === 200) {
+                    navigate('/dashboard/members');
+                } else {
+                    setAlert({ open: true, message: res.data.message, type: 'error' });
+                }
+            } else {
+                const newData = {
+                    name: data.name,
+                    rolesActions: {
+                        functionalities: data.functionalities
+                    }
+                }
+                const res = await createSubUserType(newData);
+                if (res.data.status === 201) {
+                    navigate('/dashboard/members');
+                } else {
+                    setAlert({ open: true, message: res.data.message, type: 'error' });
                 }
             }
-            const res = await updateSubUserType(id, newData);
-            if (res.data.status === 200) {
-                navigate('/dashboard/members');
-            } else {
-                setAlert({ open: true, message: res.data.message, type: 'error' });
-
-            }
-        } else {
-            const newData = {
-                name: data.name,
-                rolesActions: {
-                    functionalities: data.functionalities
-                }
-            }
-            const res = await createSubUserType(newData);
-            if (res.data.status === 201) {
-                navigate('/dashboard/members');
-            } else {
-                setAlert({ open: true, message: res.data.message, type: 'error' });
-            }
-
+        } catch (error) {
+            setAlert({
+                open: true,
+                message: error.response?.data?.message || error.message || "An unexpected error occurred",
+                type: 'error'
+            });
         }
     }
 
