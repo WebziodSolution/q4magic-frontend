@@ -28,7 +28,7 @@ const BootstrapDialog = styled(Components.Dialog)(({ theme }) => ({
 
 /** Person node component for ReactFlow */
 const PersonNode = ({ data }) => {
-  const { name, title, isHighlighted } = data;
+  const { name, title, team, isHighlighted } = data;
 
   const initials = name
     .split(' ')
@@ -73,9 +73,16 @@ const PersonNode = ({ data }) => {
             {name}
           </div>
           {title && (
-            <div className="text-xs text-gray-500 truncate mt-0.5" title={title}>
+            <div className="text-xs text-gray-600 truncate my-1" title={title}>
               {title}
             </div>
+          )}
+          {team && team.length > 0 && (
+            <ul className="text-xs text-gray-600 list-disc list-inside mt-1" title={team.map(t => t.name).join(',')}>
+              {team.map((t, i) => (
+                <li key={i} className="truncate">{t.name}</li>
+              ))}
+            </ul>
           )}
         </div>
       </div>
@@ -145,6 +152,7 @@ const convertTreeToFlowElementsSimple = (treeData, activeId) => {
       data: {
         name: node.name,
         title: node.title,
+        team: node.team,
         isHighlighted: String(nodeId) === String(activeId),
       },
       draggable: true,
@@ -192,6 +200,7 @@ const normalizeTree = (node) => {
     id: node.id,
     name: node.name || 'Unknown',
     title: node.title,
+    team: node.team,
     children: Array.isArray(node.children)
       ? node.children.map(normalizeTree).filter(Boolean)
       : [],

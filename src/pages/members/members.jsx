@@ -14,8 +14,10 @@ import { deleteCustomer, getAllSubUsers, sendRegisterInvitation } from '../../se
 import SubUserModel from '../../components/models/subUser/subUserModel';
 import { Tooltip } from '@mui/material';
 import MemberReportHierarch from './memberReportHierarch';
+import { getUserDetails } from '../../utils/getUserDetails';
 
 const Members = ({ setAlert, setSyncingPushStatus, syncingPullStatus }) => {
+  const userData = getUserDetails()
   const location = useLocation();
   const [subUsers, setSubUsers] = useState([]);
   const [selectedUserId, setSelectedUserId] = useState(null);
@@ -266,16 +268,25 @@ const Members = ({ setAlert, setSyncingPushStatus, syncingPullStatus }) => {
 
   const actionButtons = () => {
     return (
-      <PermissionWrapper
-        functionalityName="Members"
-        moduleName="Members"
-        actionId={1}
-        component={
-          <div>
-            <Button type={`button`} text={'Invite Member'} onClick={() => handleClickOpen()} startIcon={<CustomIcons iconName="fa-solid fa-plus" css="h-5 w-5" />} />
+      <div className='flex justify-end items-center gap-4'>
+        <Tooltip title="My Report Hierarchy" arrow>
+          <div className='bg-gray-600 h-8 w-8 flex justify-center items-center rounded-full text-white'>
+            <Components.IconButton onClick={() => handleOpenHierarchy(userData?.userId)}>
+              <CustomIcons iconName={'fa-solid fa-sitemap'} css='cursor-pointer text-white h-4 w-4' />
+            </Components.IconButton>
           </div>
-        }
-      />
+        </Tooltip>
+        <PermissionWrapper
+          functionalityName="Members"
+          moduleName="Members"
+          actionId={1}
+          component={
+            <div>
+              <Button type={`button`} text={'Invite Member'} onClick={() => handleClickOpen()} startIcon={<CustomIcons iconName="fa-solid fa-plus" css="h-5 w-5" />} />
+            </div>
+          }
+        />
+      </div>
     )
   }
 

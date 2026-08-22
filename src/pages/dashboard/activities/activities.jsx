@@ -70,19 +70,19 @@ const Activities = ({ filterStartDate, filterEndDate }) => {
             params.append("timeZone", userTimeZone)
             const res = await getPerformanceByCustomerId(params);
             setPerformanceData(res?.result || null);
-            let tempHunter = 0;
-            let tempFarmer = 0;
-            res?.result?.data?.forEach((row) => {
-                const newM = row.newMettings || 0;
-                const oldM = row.oldMettings || 0;
-                if (newM > oldM) {
-                    tempHunter++;
-                } else if (oldM > newM) {
-                    tempFarmer++;
-                }
-            });
-            setHunterCount(tempHunter);
-            setFarmerCount(tempFarmer);
+            // let tempHunter = 0;
+            // let tempFarmer = 0;
+            // res?.result?.data?.forEach((row) => {
+            //     const newM = row.newMettings || 0;
+            //     const oldM = row.oldMettings || 0;
+            //     if (newM > oldM) {
+            //         tempHunter++;
+            //     } else if (oldM > newM) {
+            //         tempFarmer++;
+            //     }
+            // });
+            // setHunterCount(tempHunter);
+            // setFarmerCount(tempFarmer);
         } catch (e) {
             setHunterCount(0);
             setFarmerCount(0);
@@ -105,8 +105,8 @@ const Activities = ({ filterStartDate, filterEndDate }) => {
                     title="Meetings"
                     icon={<CustomIcons iconName="fa-solid fa-bolt" css="h-5 w-5 text-[#44288E]" />}
                     value={performanceData?.totalMettings}
-                    percentage={`${Math.round((performanceData?.totalMettings / performanceData?.meetingQuota) * 100)}%`}
-                    progressPercent={`${Math.round((performanceData?.totalMettings / performanceData?.meetingQuota) * 100)}%`}
+                    percentage={`${(performanceData?.meetingQuota > 0) ? Math.round((performanceData?.totalMettings / performanceData?.meetingQuota) * 100) : 0}%`}
+                    progressPercent={`${(performanceData?.meetingQuota > 0) ? Math.round((performanceData?.totalMettings / performanceData?.meetingQuota) * 100) : 0}%`}
                     fillColor="bg-[#44288E]"//#6D28D9
                     railColor="bg-[#DDD6FE]"
                     leftLabel={performanceData?.totalMettings} leftSubLabel="Actual" leftLabelColor="text-[#44288E] font-bold"
@@ -117,8 +117,8 @@ const Activities = ({ filterStartDate, filterEndDate }) => {
                     title="Onsite Intensity"
                     icon={<CustomIcons iconName="fa-solid fa-map-location-dot" css="h-5 w-5 text-[#44288E]" />}
                     value={performanceData?.onsiteCount + performanceData?.virtualCount}
-                    percentage={`${Math.round((performanceData?.onsiteCount / (performanceData?.onsiteCount + performanceData?.virtualCount)) * 100)}%`}
-                    progressPercent={`${Math.round((performanceData?.onsiteCount / (performanceData?.onsiteCount + performanceData?.virtualCount)) * 100)}%`}
+                    percentage={`${(performanceData?.onsiteCount + performanceData?.virtualCount) > 0 ? Math.round((performanceData?.onsiteCount / (performanceData?.onsiteCount + performanceData?.virtualCount)) * 100) : 0}%`}
+                    progressPercent={`${(performanceData?.onsiteCount + performanceData?.virtualCount) > 0 ? Math.round((performanceData?.onsiteCount / (performanceData?.onsiteCount + performanceData?.virtualCount)) * 100) : 0}%`}
                     fillColor="bg-[#44288E]"
                     railColor="bg-[#DDD6FE]"
                     leftLabel={performanceData?.onsiteCount} leftSubLabel="Onsite" leftLabelColor="text-[#44288E] font-bold"
@@ -128,13 +128,13 @@ const Activities = ({ filterStartDate, filterEndDate }) => {
                 <ActivityCard
                     title="Hunter / Farmer"
                     icon={<CustomIcons iconName="fa-solid fa-handshake" css="h-5 w-5 text-[#44288E]" />}
-                    value={hunterCount}
-                    percentage={`${(hunterCount + farmerCount) > 0 ? Math.round((hunterCount / (hunterCount + farmerCount)) * 100) : 0}%`}
-                    progressPercent={`${(hunterCount + farmerCount) > 0 ? Math.round((hunterCount / (hunterCount + farmerCount)) * 100) : 0}%`}
+                    value={performanceData?.newMettings}
+                    percentage={`${(performanceData?.newMettings + performanceData?.oldMettings) > 0 ? Math.round((performanceData?.newMettings / (performanceData?.newMettings + performanceData?.oldMettings)) * 100) : 0}%`}
+                    progressPercent={`${(performanceData?.newMettings + performanceData?.oldMettings) > 0 ? Math.round((performanceData?.newMettings / (performanceData?.newMettings + performanceData?.oldMettings)) * 100) : 0}%`}
                     fillColor="bg-[#65B79F]"
                     railColor="bg-[#DDD6FE]"
-                    leftLabel={hunterCount} leftSubLabel="Hunter" leftLabelColor="text-[#44288E] font-bold"
-                    rightLabel={farmerCount} rightSubLabel="Farmer" rightLabelColor="text-[#44288E] font-bold"
+                    leftLabel={performanceData?.newMettings} leftSubLabel="Hunter" leftLabelColor="text-[#44288E] font-bold"
+                    rightLabel={performanceData?.oldMettings} rightSubLabel="Farmer" rightLabelColor="text-[#44288E] font-bold"
                 />
             </div>
 
