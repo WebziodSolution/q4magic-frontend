@@ -248,7 +248,7 @@ const Members = ({ setAlert, setSyncingPushStatus, syncingPullStatus }) => {
                   </Tooltip>
                 }
               />
-              <Tooltip title="Report-Hierarchy" arrow>
+              <Tooltip title="Business Hierarchy" arrow>
                 <div className='bg-gray-600 h-8 w-8 flex justify-center items-center rounded-full text-white'>
                   <Components.IconButton onClick={() => handleOpenHierarchy(params.row.id)}>
                     <CustomIcons iconName={'fa-solid fa-sitemap'} css='cursor-pointer text-white h-4 w-4' />
@@ -269,7 +269,7 @@ const Members = ({ setAlert, setSyncingPushStatus, syncingPullStatus }) => {
   const actionButtons = () => {
     return (
       <div className='flex justify-end items-center gap-4'>
-        <Tooltip title="My Report Hierarchy" arrow>
+        <Tooltip title="My Business Hierarchy" arrow>
           <div className='bg-gray-600 h-8 w-8 flex justify-center items-center rounded-full text-white'>
             <Components.IconButton onClick={() => handleOpenHierarchy(userData?.userId)}>
               <CustomIcons iconName={'fa-solid fa-sitemap'} css='cursor-pointer text-white h-4 w-4' />

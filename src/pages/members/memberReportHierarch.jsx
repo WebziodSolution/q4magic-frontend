@@ -78,9 +78,12 @@ const PersonNode = ({ data }) => {
             </div>
           )}
           {team && team.length > 0 && (
-            <ul className="text-xs text-gray-600 list-disc list-inside mt-1" title={team.map(t => t.name).join(',')}>
+            <ul className="text-xs text-gray-600 mt-1" title={team.map(t => t.name).join(',')}>
               {team.map((t, i) => (
-                <li key={i} className="truncate">{t.name}</li>
+                <li key={i} className="flex items-center gap-1 truncate">
+                  <span className="w-1 h-1 rounded-full bg-gray-600 flex-shrink-0" />
+                  <span className="truncate">{t.name}</span>
+                </li>
               ))}
             </ul>
           )}
