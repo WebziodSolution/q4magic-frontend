@@ -312,7 +312,7 @@ const Appointment = ({ setAlert }) => {
                 };
                 const res = await saveAppointment(payload);
                 if (res.status === 200) {
-                    setAlert({ open: true, message: res?.message || "Meeting scheduled successfully!", type: 'success' });
+                    // setAlert({ open: true, message: res?.message || "Meeting scheduled successfully!", type: 'success' });
                     setActiveStep((prev) => prev + 1);
                 } else {
                     setAlert({ open: true, message: res?.message || "Failed to schedule meeting.", type: 'error' });

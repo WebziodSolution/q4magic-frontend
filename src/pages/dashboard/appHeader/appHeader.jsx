@@ -256,15 +256,13 @@ const AppHeader = ({
         {/* 3. Right Section */}
         <div className="flex justify-end items-center gap-4 z-10 shrink-0">
           {
-            !userDetails?.subUser && (
-              <div className="flex items-center gap-6">
-                {(salesforceUserDetails && (
-                  <Components.Badge badgeContent={syncCount !== null ? syncCount : null} color="error">
-                    <Button disabled={syncStatus} onClick={() => handleSyncData()} text={syncStatus ? "SYNCING..." : "SYNC"} sx={{ backgroundColor: "#44288E", color: "white", "&:hover .overlay": { backgroundColor: "#44288E", color: "white", boxShadow: 0 }, }} />
-                  </Components.Badge>
-                ))}
-              </div>
-            )
+            <div className="flex items-center gap-6">
+              {(salesforceUserDetails && (
+                <Components.Badge badgeContent={syncCount !== null ? syncCount : null} color="error">
+                  <Button disabled={syncStatus} onClick={() => handleSyncData()} text={syncStatus ? "SYNCING..." : "SYNC"} sx={{ backgroundColor: "#44288E", color: "white", "&:hover .overlay": { backgroundColor: "#44288E", color: "white", boxShadow: 0 }, }} />
+                </Components.Badge>
+              ))}
+            </div>
           }
 
           <div className="z-50">

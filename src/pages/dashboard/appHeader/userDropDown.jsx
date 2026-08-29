@@ -92,15 +92,11 @@ export default function UserDropdown() {
             path: "/dashboard/manageapps",
             iconName: "fa-solid fa-table-cells-large",
         },
-        ...(((userdata?.roleName?.toUpperCase() === "SALES REPRESENTIVE" || userdata?.rolename === "Sales Representative" || userdata?.roleName?.toUpperCase() === "SALES MANAGER" || userdata?.roleName?.toUpperCase() === "SALE MANAGER") || !userdata?.subUser)
-            ? [
-                {
-                    label: "My CRM",
-                    path: "/dashboard/mycrm",
-                    iconName: "fa-solid fa-calendar",
-                },
-            ]
-            : [])
+        {
+            label: "My CRM",
+            path: "/dashboard/mycrm",
+            iconName: "fa-solid fa-calendar",
+        }
     ];
 
     const [logOutDialog, setLogOutDialog] = useState({ open: false, title: '', message: '', actionButtonText: '' });
