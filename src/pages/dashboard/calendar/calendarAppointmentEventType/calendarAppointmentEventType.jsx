@@ -171,7 +171,7 @@ const CalendarAppointmentEventType = ({ setAlert }) => {
         <div>
             {/* Header Title & Plus Icon */}
             <div className="flex items-center gap-3 mb-6">
-                <h2 className="text-xl font-bold text-gray-800">Appointment Event Type</h2>
+                <h2 className="text-xl font-bold text-gray-800">Meeting Type</h2>
                 <button
                     onClick={handleOpenAddModal}
                     className="p-1 hover:bg-gray-100 rounded transition-colors border-none bg-transparent cursor-pointer flex items-center justify-center"

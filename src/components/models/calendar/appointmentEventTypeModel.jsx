@@ -125,7 +125,7 @@ function AppointmentEventTypeModel({ setAlert, open, handleClose, eventTypeId, h
             if (res?.status === 200 || res?.status === 201) {
                 setAlert({
                     open: true,
-                    message: `Event type ${eventTypeId ? 'updated' : 'created'} successfully`,
+                    message: `Meeting type ${eventTypeId ? 'updated' : 'created'} successfully`,
                     type: "success"
                 });
                 handleGetAllEventTypes();
@@ -133,7 +133,7 @@ function AppointmentEventTypeModel({ setAlert, open, handleClose, eventTypeId, h
             } else {
                 setAlert({
                     open: true,
-                    message: res?.message || "Failed to save event type",
+                    message: res?.message || "Failed to save meeting type",
                     type: "error"
                 });
             }
@@ -158,7 +158,7 @@ function AppointmentEventTypeModel({ setAlert, open, handleClose, eventTypeId, h
                 maxWidth='sm'
             >
                 <Components.DialogTitle sx={{ m: 0, p: 2, color: theme.palette.text.primary }} id="customized-dialog-title">
-                    {eventTypeId ? "Update" : "Add"} Appointment Event Type
+                    {eventTypeId ? "Update" : "Add"} Meeting Type
                 </Components.DialogTitle>
 
                 <Components.IconButton

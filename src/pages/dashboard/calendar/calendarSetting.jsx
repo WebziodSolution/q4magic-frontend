@@ -12,7 +12,7 @@ const CalendarSetting = () => {
 
     const tabsData = [
         {
-            label: 'APPOINTMENT EVENT TYPE',
+            label: 'MEETING TYPES',
             component: <CalendarAppointmentEventType />
         },
         {

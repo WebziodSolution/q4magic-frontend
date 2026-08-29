@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import { decryptUserId } from '../../../../utils/getUserDetails';
 import { getTimeZones } from '../../../../service/timeZones/timeZoneService';
 import Stapper from '../../../../components/common/stapper/stapper';
@@ -21,6 +21,7 @@ import { createTheme, ThemeProvider, useTheme } from '@mui/material';
 import { freeSlotList, saveAppointment } from '../../../../service/calendar/calendarAppointment/calendarAppointmentService';
 import { connect } from 'react-redux';
 import { setAlert } from '../../../../redux/commonReducers/commonReducers';
+import { getCustomer } from '../../../../service/customers/customersService';
 const formatDuration = (hours, minutes) => {
     if (hours && minutes) {
         const pad = (num) => String(num).padStart(2, '0');
@@ -107,6 +108,7 @@ const Appointment = ({ setAlert }) => {
     const [emailInput, setEmailInput] = useState("");
     const [guestEmailsInitialized, setGuestEmailsInitialized] = useState(false);
     const inputRef = useRef(null);
+    const [userDetails, setUserDetails] = useState({});
 
     const {
         handleSubmit,
@@ -202,6 +204,7 @@ const Appointment = ({ setAlert }) => {
             setActiveStep((prev) => prev - 1);
         }
     };
+
     const handleGetTimeZones = async () => {
         const res = await getTimeZones()
         if (res.status === 200) {
@@ -289,6 +292,19 @@ const Appointment = ({ setAlert }) => {
         setGuestEmails(guestEmails.filter((_, index) => index !== indexToRemove));
     };
 
+    const handleGetUserDetails = async () => {
+        try {
+            if (decryptedUserId) {
+                const res = await getCustomer(decryptedUserId)
+                if (res?.data.status === 200) {
+                    setUserDetails(res?.data?.result)
+                }
+            }
+        } catch (error) {
+            console.error("Error fetching user details:", error);
+        }
+    }
+
     const onSubmit = async (data) => {
         if (activeStep === 4) {
             try {
@@ -327,6 +343,7 @@ const Appointment = ({ setAlert }) => {
     }
 
     useEffect(() => {
+        handleGetUserDetails()
         handleGetTimeZones()
         handleGetAllTeams()
     }, [])
@@ -372,7 +389,7 @@ const Appointment = ({ setAlert }) => {
         <div className="min-h-screen flex-row items-start justify-center bg-gray-50 p-4">
             <div className='text-center'>
                 <p className='text-3xl font-medium text-black'>
-                    Welcome to 360Pipe's Meeting Scheduling.
+                    Welcome to 360Pipe's Meeting Scheduling with {userDetails?.firstName + ' ' + userDetails?.lastName}
                 </p>
                 <p className="text-sm font-medium text-gray-700 mt-1">
                     Please select meeting type and follow the instruction to add meeting to my calendar.
@@ -444,7 +461,7 @@ const Appointment = ({ setAlert }) => {
                                     <Controller
                                         name="teamId"
                                         control={control}
-                                        rules={{ required: "Team is required" }}
+                                        // rules={{ required: "Team is required" }}
                                         render={({ field }) => (
                                             <Select
                                                 options={teams}
@@ -467,6 +484,13 @@ const Appointment = ({ setAlert }) => {
                     {
                         activeStep === 2 && (
                             <div className="grid grid-cols-1 gap-4">
+                                {
+                                    events?.length === 0 && (
+                                        <p className="text-gray-600 text-sm font-medium text-center mt-2">
+                                            No meeting types found. Create a meeting type in <Link to={'/dashboard/calendarsettings'} target='_blank' rel='noopener noreferrer' className='text-blue-500 font-semibold'>Calendar Settings</Link> before continue.
+                                        </p>
+                                    )
+                                }
                                 <Controller
                                     name="calAetId"
                                     control={control}
@@ -772,7 +796,7 @@ const Appointment = ({ setAlert }) => {
                                     }
 
                                     <div>
-                                        <Button type="submit" disabled={activeStep === 2 ? events?.length === 0 : activeStep === 1 ? teamEmails?.length === 0 : false} startIcon={activeStep === 4 ? <CustomIcons iconName="fa-regular fa-calendar-check" css="text-gray-600 text-sm" /> : null} text={activeStep === 4 ? "SCHEDULE MEETING" : "Next"} />
+                                        <Button type="submit" disabled={activeStep === 2 ? events?.length === 0 : false} startIcon={activeStep === 4 ? <CustomIcons iconName="fa-regular fa-calendar-check" css="text-gray-600 text-sm" /> : null} text={activeStep === 4 ? "SCHEDULE MEETING" : "Next"} />
                                     </div>
                                 </div>
                             </div>
