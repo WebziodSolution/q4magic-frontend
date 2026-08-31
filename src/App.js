@@ -47,6 +47,8 @@ import Privacy from "./pages/privacy/Privacy";
 import ManageApps from "./pages/dashboard/manageApps/manageApps";
 import CalendarSetting from "./pages/dashboard/calendar/calendarSetting";
 import Appointment from "./pages/dashboard/calendar/appointment/appointment";
+import SetAppointment from "./pages/dashboard/calendar/appointment/setAppointment";
+import EditAppointment from "./pages/dashboard/calendar/appointment/editAppointment";
 
 library.add(fas, far, fab)
 
@@ -79,6 +81,14 @@ const App = ({ setLoading }) => {
     {
       path: "/meeting",
       element: <Appointment />,
+    },
+    {
+      path: "/set-appointment",
+      element: <SetAppointment />,
+    },
+    {
+      path: "/edit-appointment",
+      element: <EditAppointment />,
     },
     {
       path: "/subaccountactivesetup/:token",

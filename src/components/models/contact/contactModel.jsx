@@ -50,6 +50,7 @@ function ContactModel({ setSyncingPushStatus, setAlert, open, handleClose, conta
             title: null,
             emailAddress: null,
             role: null,
+            roleId: null,
             notes: null,
             keyContact: null,
             recordStatus: null,
@@ -71,6 +72,7 @@ function ContactModel({ setSyncingPushStatus, setAlert, open, handleClose, conta
             title: null,
             emailAddress: null,
             role: null,
+            roleId: null,
             notes: null,
             keyContact: null,
             recordStatus: null,
@@ -84,7 +86,7 @@ function ContactModel({ setSyncingPushStatus, setAlert, open, handleClose, conta
             if (res?.status === 200) {
                 reset(res?.result);
                 if (res?.result?.role != null && res?.result?.role !== "") {
-                    setValue("role", opportunityContactRoles.find(role => role.title === res?.result?.role)?.id || null);
+                    setValue("roleId", opportunityContactRoles.find(role => role.title === res?.result?.role)?.id || null);
                 }
             }
         }
@@ -129,7 +131,7 @@ function ContactModel({ setSyncingPushStatus, setAlert, open, handleClose, conta
         setLoading(true);
         const newData = {
             ...data,
-            role: data?.role ? opportunityContactRoles.find(role => role.id === data.role)?.title : null,
+            role: data?.roleId ? opportunityContactRoles.find(role => role.id === data.roleId)?.title : null,
         }
         try {
             if (contactId) {
@@ -300,6 +302,23 @@ function ContactModel({ setSyncingPushStatus, setAlert, open, handleClose, conta
                                             type={`text`}
                                             requiredFiledLabel={true}
                                             error={errors.title}
+                                        />
+                                    )}
+                                />
+                                <Controller
+                                    name="roleId"
+                                    control={control}
+                                    render={({ field }) => (
+                                        <Select
+                                            options={opportunityContactRoles}
+                                            label={"Role"}
+                                            placeholder="Select Role"
+                                            value={parseInt(watch("roleId")) || null}
+                                            onChange={(_, newValue) => {
+                                                if (newValue?.id) {
+                                                    field.onChange(newValue.id);
+                                                }
+                                            }}
                                         />
                                     )}
                                 />

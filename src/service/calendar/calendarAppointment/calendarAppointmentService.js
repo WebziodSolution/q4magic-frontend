@@ -50,3 +50,36 @@ export const saveAppointment = async (data) => {
         throw error;
     }
 };
+
+export const setAcceptOrRejectAppointment = async (data) => {
+    try {
+        const response = await axiosInterceptor().post(`${calendarAppointmentURL}/setAcceptOrRejectAppointment`, data);
+        return response.data;
+    } catch (error) {
+        console.error("Error setAcceptOrRejectAppointment:", error);
+        throw error;
+    }
+};
+
+export const getEditAppointmentDetails = async (id, v) => {
+    try {
+        const params = new URLSearchParams();
+        if (id) params.append('id', id);
+        if (v) params.append('v', v);
+        const response = await axiosInterceptor().get(`${calendarAppointmentURL}/getEditAppointmentDetails?${params.toString()}`);
+        return response.data;
+    } catch (error) {
+        console.error("Error getEditAppointmentDetails:", error);
+        throw error;
+    }
+};
+
+export const updateAppointmentDateTime = async (data) => {
+    try {
+        const response = await axiosInterceptor().post(`${calendarAppointmentURL}/updateAppointmentDateTime`, data);
+        return response.data;
+    } catch (error) {
+        console.error("Error updateAppointmentDateTime:", error);
+        throw error;
+    }
+};

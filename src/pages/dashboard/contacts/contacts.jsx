@@ -13,6 +13,7 @@ import { useLocation } from 'react-router-dom';
 import PermissionWrapper from '../../../components/common/permissionWrapper/PermissionWrapper';
 import ContactReportHierarch from '../../../components/models/contact/contactReportHierarch';
 import { Tooltip } from '@mui/material';
+import { getUserDetails, encryptUserId } from '../../../utils/getUserDetails';
 
 const Contacts = ({ setAlert, setSyncingPushStatus, syncingPullStatus }) => {
     const location = useLocation();
@@ -26,6 +27,16 @@ const Contacts = ({ setAlert, setSyncingPushStatus, syncingPullStatus }) => {
     const [selectedContactId, setSelectedContactId] = useState(null);
     const [dialog, setDialog] = useState({ open: false, title: '', message: '', actionButtonText: '' });
     const [search, setSearch] = useState("")
+
+    const handleScheduleMeeting = (emailAddress) => {
+        const user = getUserDetails();
+        const cusId = user?.userId;
+        if (!cusId) return;
+        const encryptedUserId = encryptUserId(cusId);
+        const contactEmail = emailAddress && emailAddress !== '-' ? emailAddress : '';
+        const url = `/meeting?v=${encryptedUserId}${contactEmail ? `&email=${encodeURIComponent(contactEmail)}` : ''}&from=contacts`;
+        window.open(url, '_blank');
+    };
 
     const handleGetContacts = async () => {
         try {
@@ -214,6 +225,13 @@ const Contacts = ({ setAlert, setSyncingPushStatus, syncingPullStatus }) => {
             minWidth: 200,
         },
         {
+            field: 'role',
+            headerName: 'Role',
+            headerClassName: 'uppercase',
+            flex: 1,
+            minWidth: 200
+        },
+        {
             field: 'emailAddress',
             headerName: 'Email',
             headerClassName: 'uppercase',
@@ -233,11 +251,18 @@ const Contacts = ({ setAlert, setSyncingPushStatus, syncingPullStatus }) => {
             headerClassName: 'uppercase',
             sortable: false,
             flex: 1,
-            maxWidth: 150,
+            maxWidth: 200,
             headerAlign: "center",
             renderCell: (params) => {
                 return (
                     <div className='flex items-center gap-2 justify-center h-full'>
+                        <Tooltip title="Schedule Meeting" arrow>
+                            <div className='bg-purple-700 h-8 w-8 flex justify-center items-center rounded-full text-white'>
+                                <Components.IconButton onClick={() => handleScheduleMeeting(params.row.emailAddress)}>
+                                    <CustomIcons iconName={'fa-solid fa-calendar-plus'} css='cursor-pointer text-white h-4 w-4' />
+                                </Components.IconButton>
+                            </div>
+                        </Tooltip>
                         <Tooltip title="Report-Hierarchy" arrow>
                             <div className='bg-gray-600 h-8 w-8 flex justify-center items-center rounded-full text-white'>
                                 <Components.IconButton onClick={() => handleOpenHierarchy(params.row.id)}>

@@ -1,0 +1,37 @@
+Now I want to change into saveAppointment API logic and UI.
+1) Now user is able to select one or more time slot from the free slot list. So need to pass all the time slot selected by the user in the API call as array of object with start and end time, instead of start and end which is currently pass.
+Example:
+[{"start":"09/01/2026 10:00:00", "end":"09/01/2026 11:00:00"}, {"start":"09/01/2026 11:00:00", "end":"09/01/2026 12:00:00"}]
+2) Now for activeStep === 5 into src\pages\dashboard\calendar\appointment\appointment.jsx no need to show Meeting Scheduled! Instead of this show Metting Request Sent to {userDetails?.firstName + ' ' + userDetails?.lastName} !
+    - with green checkmark.
+    - below that show all the details of the appointment.
+3) See this saveAppointment logic which is into calendar\calendarAppointment\serviceImpl\CalendarAppointmentServiceImpl.java now do not create entry into calendar table and not send mail to user for A new meeting has been scheduled.
+    Now send mail to "customerId": 196, which is passed into saveAppointment API call request with HTML format like below.
+    Header
+    Subject: New Meeting Request.
+
+    Dear [Customer Name],
+
+    This email confirms that a new meeting request has been received and is pending your approval.
+
+    Show all selected slots for appointment with time and date with accept button each slot.
+    [start] [end]  [accept] 
+    [start] [end]  [accept]
+
+    Once you approve this request, the meeting will be added to your calendar.
+
+    To reject this appointment request, please click on the link below:
+    [Button to Reject]    
+
+    Thank you for your time. We look forward to assisting you!
+
+    Best regards,
+    The 360pipe Team
+
+    Footer
+4) For mail formate see saveAppointment HTML content. here into new mail accept button has link button. if there are 2 slots then show 2 accept buttons, if there are 3 slots then show 3 accept buttons. and each accept button will have link for accept specific time slot. open unique link into new tab and show success message "Meeting accepted successfully!". and reject button will have link button. open link into new tab and show success message "Meeting rejected successfully!".
+Link url is like /set-appointment?v=MjA0Mg==&status=accept&timeSlotId=MTQy and it is dynamic based on time slot id. create new sprate react page with content like which is currently show into src\pages\dashboard\calendar\appointment\appointment.jsx activeStep === 5 when this page load call new API for setAcceptOrRejectAppointment with all data which is need to saveAppointment API call request. create this API and it's logic into calendar\calendarAppointment\serviceImpl\CalendarAppointmentServiceImpl.java and @CalendarAppointmentController.java file.
+5) Now which change need to do into freeSlotList API logic because user just select 3 slots and mail request send to user for choosing one slot when user available but what if other user also start Meeting Scheduling process for same coustomer so it is also show that 3 slots which is into request stage currently? 
+or instead of this show available slots based on accept or reject slot into freeSlotList API call request. if no slot is accepted or rejected then show all available slots. if one slot is accepted then show all available slots except accepted slot. if one slot is rejected then show all available slots except rejected slot. if all slots are accepted or rejected then show no available slots.
+
+Do proper logic and debugging for all the above changes.
