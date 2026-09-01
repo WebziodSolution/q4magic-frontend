@@ -126,8 +126,31 @@ const Dashboard = ({ filterStartDate, filterEndDate, salesforceUserDetails, sale
             totalDealAmount > 0 && totalClosedDealAmount != null
                 ? parseInt(((totalClosedDealAmount / totalDealAmount) * 100))
                 : null;
-        const pipeLineData = dashboardData?.pipeLineData || [];
+        const rawPipelineData = dashboardData?.pipeLineData || [];
         const meetingData = dashboardData?.meetingData || [];
+        const groupedMap = new Map();
+        rawPipelineData.forEach((item, index) => {
+            const key = `${item.created_by || '—'}_${item.account || '—'}`;
+            if (!groupedMap.has(key)) {
+                groupedMap.set(key, {
+                    id: item.id ?? index,
+                    created_by: item.created_by,
+                    account: item.account,
+                    totalDealAmount: 0,
+                    opps: []
+                });
+            }
+            const group = groupedMap.get(key);
+            if (Array.isArray(item.opps) && item.opps.length > 0) {
+                group.opps.push(...item.opps);
+                const itemTotal = item.totalDealAmount ?? item.dealAmount ?? item.opps.reduce((sum, o) => sum + (Number(o.dealAmount) || 0), 0);
+                group.totalDealAmount += (Number(itemTotal) || 0);
+            } else {
+                group.opps.push(item);
+                group.totalDealAmount += (Number(item.totalDealAmount ?? item.dealAmount) || 0);
+            }
+        });
+        const pipeLineData = Array.from(groupedMap.values());
 
         return {
             totalContacts,
@@ -366,7 +389,7 @@ const Dashboard = ({ filterStartDate, filterEndDate, salesforceUserDetails, sale
                                         >
                                             <td className="px-4 py-3 text-sm text-slate-700">{row.created_by || '—'}</td>
                                             <td className="px-4 py-3 text-sm text-slate-700">{row.account || '—'}</td>
-                                            <td className="px-4 py-3 text-sm font-semibold text-slate-800">{moneyLabel(row.totalDealAmount) || '—'}</td>
+                                            <td className="px-4 py-3 text-sm font-semibold text-slate-800">{moneyLabel(row.totalDealAmount || row.dealAmount) || '—'}</td>
                                         </tr>
                                     ))}
                                 </tbody>
