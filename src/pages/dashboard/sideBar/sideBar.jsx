@@ -39,18 +39,22 @@ const Sidebar = ({
                 name: "Pipeline",
                 path: "/dashboard/opportunities",
                 pro: false,
-                // subItems: [
-                //     // { name: "Accounts", path: "/dashboard/accounts", pro: false },
-                //     { name: "Opportunities", path: "/dashboard/opportunities", pro: false },
-                //     { name: "Contacts", path: "/dashboard/contacts", pro: false }
-                // ]
             },
-            {
-                icon: <CustomIcons iconName="fa-solid fa-circle" />,
-                name: "Performance",
-                path: "/dashboard/performance",
-                pro: false
-            },
+            ...(userDetails?.roleName?.toUpperCase() === "SALE MANAGER" || userDetails?.roleName?.toUpperCase() === "SALES MANAGER"
+                ? [{
+                    icon: <CustomIcons iconName="fa-solid fa-circle" />,
+                    name: "Performance",
+                    path: "/dashboard/performance",
+                    pro: false
+                }]
+                : (userDetails?.subscriptionPlan === 2 && (userDetails?.roleName?.toLowerCase() === "sales representative" || userDetails?.roleName?.toLowerCase() === "sales representive"))
+                    ? [{
+                        icon: <CustomIcons iconName="fa-solid fa-circle" />,
+                        name: "Deal Mgt",
+                        path: "/dashboard/deals",
+                        pro: false
+                    }]
+                    : []),
             {
                 icon: <CustomIcons iconName="fa-solid fa-circle" />,
                 name: "Contacts",
@@ -59,7 +63,10 @@ const Sidebar = ({
             },
             {
                 icon: <CustomIcons iconName="fa-solid fa-circle" />,
-                name: userDetails?.roleName?.toUpperCase() === "SALES REPRESENTIVE" ? "My Actions" : "Team Actions",
+                name:
+                    userDetails?.roleName?.toUpperCase() !== "SALES MANAGER" || userDetails?.roleName?.toUpperCase() !== "SALE MANAGER"
+                        ? "My Actions"
+                        : "Team Actions",
                 path: "/dashboard/todos",
                 pro: false
             },

@@ -112,6 +112,7 @@ const Login = ({ setAlert, loading, salesforceUserDetails, setSalesforceTokens, 
                 permissions: res?.data?.result?.permissions?.rolesActions,
                 subUser: res?.data?.result?.subUser,
                 name: res?.data?.result?.name,
+                subscriptionPlan: res?.data?.result?.subscriptionPlan
             };
             localStorage.setItem("userInfo", JSON.stringify(userdata));
             const tokens = await fetchAndSetSalesforceTokens(res?.data?.result?.userId);
@@ -138,10 +139,6 @@ const Login = ({ setAlert, loading, salesforceUserDetails, setSalesforceTokens, 
         } else {
             setAlert({ open: true, type: "error", message: res?.data?.result?.error || res?.data?.msg || "Server error" })
         }
-    }
-
-    const initSalesforce = async () => {
-
     }
 
     useEffect(() => {

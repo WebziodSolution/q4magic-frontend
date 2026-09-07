@@ -71,7 +71,9 @@ const AppHeader = ({
       { label: "Pipeline", path: "/dashboard/opportunities" },
       ...(userDetails?.roleName?.toUpperCase() === "SALE MANAGER" || userDetails?.roleName?.toUpperCase() === "SALES MANAGER"
         ? [{ label: "Performance", path: "/dashboard/performance", }]
-        : [{ label: "Deal Mgt", path: "/dashboard/deals", }]),
+        : (userDetails?.subscriptionPlan === 2 && (userDetails?.roleName?.toLowerCase() === "sales representative" || userDetails?.roleName?.toLowerCase() === "sales representive"))
+          ? [{ label: "Deal Mgt", path: "/dashboard/deals", }]
+          : []),
       {
         label: "Contacts",
         path: "/dashboard/contacts",

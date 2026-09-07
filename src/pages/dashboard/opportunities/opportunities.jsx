@@ -23,6 +23,7 @@ import { useForm } from 'react-hook-form';
 import KeyContactModel from '../../../components/models/closePlan/keyContactModel';
 import ClosePlanCommentModel from '../../../components/models/closePlan/closePlanCommentModel';
 import OpportunityInfoModel from '../../../components/models/opportunities/opportunityInfoModel';
+import { getUserDetails } from '../../../utils/getUserDetails';
 
 const HtmlTooltip = styled(({ className, ...props }) => (
     <Tooltip
@@ -68,6 +69,7 @@ const HtmlTooltip = styled(({ className, ...props }) => (
 const Opportunities = ({ setAlert, setSyncingPushStatus, syncingPullStatus }) => {
     const location = useLocation();
     const navigate = useNavigate();
+    const userDetails = getUserDetails();
 
     const canEditOpps = PermissionWrapper.hasPermission({
         functionalityName: "Opportunities",
@@ -634,20 +636,24 @@ const Opportunities = ({ setAlert, setSyncingPushStatus, syncingPullStatus }) =>
                                 </Tooltip>
                             }
                         />
-                        <PermissionWrapper
-                            functionalityName="Close Plan"
-                            moduleName="Close Plan"
-                            actionId={1}
-                            component={
-                                <Tooltip title="Close Plane" arrow>
-                                    <div className='bg-gray-600 h-8 w-8 flex justify-center items-center rounded-full text-white'>
-                                        <Components.IconButton onClick={() => handleOpenContactModel(params.row)}>
-                                            <CustomIcons iconName={'fa-solid fa-envelope'} css='cursor-pointer text-white h-4 w-4' />
-                                        </Components.IconButton>
-                                    </div>
-                                </Tooltip>
-                            }
-                        />
+                        {
+                            userDetails?.subscriptionPlan === 2 && (
+                                <PermissionWrapper
+                                    functionalityName="Close Plan"
+                                    moduleName="Close Plan"
+                                    actionId={1}
+                                    component={
+                                        <Tooltip title="Close Plane" arrow>
+                                            <div className='bg-gray-600 h-8 w-8 flex justify-center items-center rounded-full text-white'>
+                                                <Components.IconButton onClick={() => handleOpenContactModel(params.row)}>
+                                                    <CustomIcons iconName={'fa-solid fa-envelope'} css='cursor-pointer text-white h-4 w-4' />
+                                                </Components.IconButton>
+                                            </div>
+                                        </Tooltip>
+                                    }
+                                />
+                            )
+                        }
                     </div>
                 );
             },
