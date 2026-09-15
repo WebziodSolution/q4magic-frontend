@@ -298,7 +298,7 @@ function AddTodo({ setAlert, open, handleClose, todoId, handleGetAllTodos }) {
                     const assignData = response?.result;
                     setValue('assignedId', assignData?.id);
                     setValue('teamId', assignData?.teamId);
-
+                    console.log("assignData?.customerIds?.some((row) => row === assignData?.assignBy)", assignData?.customerIds?.some((row) => row === assignData?.assignBy))
                     if (assignData?.teamId && assignData?.customerIds?.length > 0) {
                         const members = await getAllTeamMembers(assignData?.teamId);
                         const data = members?.result?.map((item) => ({
@@ -307,12 +307,13 @@ function AddTodo({ setAlert, open, handleClose, todoId, handleGetAllTodos }) {
                         }));
                         setCustomers(data || []);
                         setValue('assignedType', 2);
-                    } else if (assignData?.customerIds?.length > 0 && assignData?.teamId === null) {
-                        setValue('customerIds', assignData?.customerIds != null ? assignData?.customerIds : []);
-                        setValue('assignedType', 3);
-                    } else {
+                    } else if (assignData?.customerIds?.some((row) => row === assignData?.assignBy)) {
                         setValue('customerId', parseInt(assignData?.customerId));
                         setValue('assignedType', 1);
+                    }
+                    else if (assignData?.customerIds?.length > 0 && assignData?.teamId === null) {
+                        setValue('customerIds', assignData?.customerIds != null ? assignData?.customerIds : []);
+                        setValue('assignedType', 3);
                     }
                 }
             }
@@ -696,7 +697,7 @@ function AddTodo({ setAlert, open, handleClose, todoId, handleGetAllTodos }) {
                                         )}
                                     />
                                 </div>
-                                
+
                                 <div className='grid grid-cols-2 gap-[30px]'>
                                     <div>
                                         <Controller

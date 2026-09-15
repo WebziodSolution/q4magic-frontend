@@ -1191,23 +1191,23 @@ const Opportunities = ({ setAlert, setSyncingPushStatus, syncingPullStatus }) =>
                 accountId: updatedData.accountId ?? newRow.accountId,
             };
 
-            if (cleanedAmount === null || cleanedAmount === "") {
-                setAlert({
-                    open: true,
-                    message: "Deal amount can not be empty",
-                    type: "error"
-                });
-                return oldRow;
-            }
+            // if (cleanedAmount === null || cleanedAmount === "") {
+            //     setAlert({
+            //         open: true,
+            //         message: "Deal amount can not be empty",
+            //         type: "error"
+            //     });
+            //     return oldRow;
+            // }
 
-            if (newRow.nextSteps === null || newRow.nextSteps === "") {
-                setAlert({
-                    open: true,
-                    message: "Next step can not be empty",
-                    type: "error"
-                });
-                return oldRow;
-            }
+            // if (newRow.nextSteps === null || newRow.nextSteps === "") {
+            //     setAlert({
+            //         open: true,
+            //         message: "Next step can not be empty",
+            //         type: "error"
+            //     });
+            //     return oldRow;
+            // }
 
             // 👇 accountId is now included in updatedData
             const res = await updateOpportunity(newRow.id, updatedData);
