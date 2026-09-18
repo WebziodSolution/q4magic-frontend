@@ -20,10 +20,31 @@ const UserInfoSkeleton = () => (
     </div>
 );
 
+// PKCE helpers (RFC 7636)
+const generateCodeVerifier = () => {
+    const array = new Uint8Array(32);
+    window.crypto.getRandomValues(array);
+    return btoa(String.fromCharCode(...array))
+        .replace(/\+/g, '-')
+        .replace(/\//g, '_')
+        .replace(/=+$/, '');
+};
+
+const generateCodeChallenge = async (codeVerifier) => {
+    const encoder = new TextEncoder();
+    const data = encoder.encode(codeVerifier);
+    const digest = await window.crypto.subtle.digest('SHA-256', data);
+    return btoa(String.fromCharCode(...new Uint8Array(digest)))
+        .replace(/\+/g, '-')
+        .replace(/\//g, '_')
+        .replace(/=+$/, '');
+};
+
 const Crm = ({ loadingMessage, setLoadingMessage, setLoading, setAlert, loading, setSyncCount, setSyncingPushStatus, setSyncingPullStatus, salesforceUserDetails, setSalesforceUserDetails, syncStatus, setSyncStatus, setSalesforceTokens, clearSalesforceTokens, salesforceAccessToken, salesforceInstanceUrl }) => {
     const exchangingRef = useRef(false);
     const popupRef = useRef(null);
     const intervalRef = useRef(null);
+    const codeVerifierRef = useRef(null);
     const userData = getUserDetails()
 
     const [dialog, setDialog] = useState({ open: false, title: '', message: '', actionButtonText: '' });
@@ -112,6 +133,17 @@ const Crm = ({ loadingMessage, setLoadingMessage, setLoading, setAlert, loading,
                 return;
             }
 
+            let loginUrl = res.result.url;
+            try {
+                const verifier = generateCodeVerifier();
+                const challenge = await generateCodeChallenge(verifier);
+                codeVerifierRef.current = verifier;
+                const separator = loginUrl.includes("?") ? "&" : "?";
+                loginUrl = `${loginUrl}${separator}code_challenge=${encodeURIComponent(challenge)}&code_challenge_method=S256`;
+            } catch (pkceErr) {
+                console.warn("PKCE generation skipped/failed:", pkceErr);
+            }
+
             const width = 600, height = 700;
             const left = window.screenX + (window.outerWidth - width) / 2;
             const top = window.screenY + (window.outerHeight - height) / 2;
@@ -121,7 +153,7 @@ const Crm = ({ loadingMessage, setLoadingMessage, setLoading, setAlert, loading,
             closePopup();
 
             const popup = window.open(
-                res.result.url,
+                loginUrl,
                 "Salesforce Login",
                 `width=${width},height=${height},left=${left},top=${top}`
             );
@@ -141,6 +173,7 @@ const Crm = ({ loadingMessage, setLoadingMessage, setLoading, setAlert, loading,
                         stopPopupWatcher();
                         setLoading(false);
                         exchangingRef.current = false;
+                        codeVerifierRef.current = null;
                         return;
                     }
 
@@ -151,11 +184,29 @@ const Crm = ({ loadingMessage, setLoadingMessage, setLoading, setAlert, loading,
                     // handle error from Salesforce redirect
                     if (popupUrl.includes("error=")) {
                         stopPopupWatcher();
-                        setAlert({ open: true, type: "error", message: "Salesforce authentication failed." });
+                        const qs = popupUrl.split("?")[1] || "";
+                        const params = new URLSearchParams(qs);
+                        const errorCode = params.get("error");
+                        const errorDescription = params.get("error_description");
+
+                        console.error("Salesforce OAuth Error:", {
+                            error: errorCode,
+                            description: errorDescription,
+                            fullUrl: popupUrl,
+                        });
+
+                        setAlert({
+                            open: true,
+                            type: "error",
+                            message: errorDescription
+                                ? `Salesforce authentication failed: ${decodeURIComponent(errorDescription)}`
+                                : "Salesforce authentication failed."
+                        });
                         closePopup();
                         setLoading(false);
-                        setLoadingMessage(null)
+                        setLoadingMessage(null);
                         exchangingRef.current = false;
+                        codeVerifierRef.current = null;
                         return;
                     }
 
@@ -174,11 +225,14 @@ const Crm = ({ loadingMessage, setLoadingMessage, setLoading, setAlert, loading,
                             exchangingRef.current = false;
                             closePopup();
                             setLoading(false);
-                            setLoadingMessage(null)
+                            setLoadingMessage(null);
+                            codeVerifierRef.current = null;
                             return;
                         }
 
-                        const tokenRes = await exchangeToken(code);
+                        const currentVerifier = codeVerifierRef.current;
+                        const tokenRes = await exchangeToken(code, currentVerifier);
+                        codeVerifierRef.current = null;
                         const token = tokenRes?.result?.data?.access_token;
                         const instanceUrl = tokenRes?.result?.data?.instance_url;
 

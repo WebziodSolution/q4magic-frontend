@@ -11,9 +11,13 @@ export const connectToSalesforce = async () => {
     }
 }
 
-export const exchangeToken = async (code) => {
+export const exchangeToken = async (code, codeVerifier) => {
     try {
-        const response = await axiosInterceptor().get(`${salesforceBaseURL}/exchangeToken?code=${encodeURIComponent(code)}`)
+        let url = `${salesforceBaseURL}/exchangeToken?code=${encodeURIComponent(code)}`;
+        if (codeVerifier) {
+            url += `&code_verifier=${encodeURIComponent(codeVerifier)}`;
+        }
+        const response = await axiosInterceptor().get(url);
         return response.data;
     } catch (error) {
         throw new Error(`Error exchanging token: ${error.message}`);
