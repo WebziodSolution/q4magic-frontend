@@ -65,24 +65,21 @@ const AppHeader = ({
   const handleSetNavItems = () => {
     const tabItems = [
       {
-        icon: <CustomIcons iconName="fa-solid fa-house" />,
+        // icon: <CustomIcons iconName="fa-solid fa-house" />,
+        label: "Dashboard",
         path: "/dashboard",
       },
       { label: "Pipeline", path: "/dashboard/opportunities" },
       ...(userDetails?.roleName?.toUpperCase() === "SALE MANAGER" || userDetails?.roleName?.toUpperCase() === "SALES MANAGER"
         ? [{ label: "Performance", path: "/dashboard/performance", }]
         : (userDetails?.subscriptionPlan === 2 && (userDetails?.roleName?.toLowerCase() === "sales representative" || userDetails?.roleName?.toLowerCase() === "sales representive"))
-          ? [{ label: "Deal Mgt", path: "/dashboard/deals", }]
+          ? [{ label: "Deal Mgt", path: "/dashboard/deals", }, { label: "Contacts", path: "/dashboard/contacts" }]
           : []),
       {
-        label: "Contacts",
-        path: "/dashboard/contacts",
-      },
-      {
         label:
-          userDetails?.roleName?.toUpperCase() !== "SALES MANAGER" || userDetails?.roleName?.toUpperCase() !== "SALE MANAGER"
-            ? "My Actions"
-            : "Team Actions",
+          userDetails?.roleName?.toUpperCase() === "SALES MANAGER" || userDetails?.roleName?.toUpperCase() === "SALE MANAGER"
+            ? "Team Actions"
+            : "My Actions",
         path: "/dashboard/todos",
       },
     ];

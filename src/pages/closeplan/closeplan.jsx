@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { useParams } from "react-router-dom";
+import { NavLink, useParams } from "react-router-dom";
 import { connect } from "react-redux";
 
 import Button from "../../components/common/buttons/button";
@@ -8,6 +8,7 @@ import { getAllClosePlanNotes, saveClosePlanNote } from "../../service/closePlan
 import { setAlert } from "../../redux/commonReducers/commonReducers";
 import CustomIcons from "../../components/common/icons/CustomIcons";
 import Components from "../../components/muiComponents/components";
+import { Tabs } from "../../components/common/tabs/tabs";
 
 // ---------- helpers ----------
 
@@ -109,6 +110,11 @@ const Pill = ({ children }) => (
 // ---------- main ----------
 const Closeplan = ({ setAlert }) => {
     const { token } = useParams();
+    const [tabsData, setTabsData] = useState([{
+        // icon: <CustomIcons iconName="fa-solid fa-house" />,
+        label: "Close Plan",
+    },])
+    const [selectedTab, setSelectedTab] = useState(0)
     const [copiedIndex, setCopiedIndex] = useState(null);
 
     const [loading, setLoading] = useState(true);
@@ -298,7 +304,18 @@ const Closeplan = ({ setAlert }) => {
                     </div>
                 </div>
             </div> */}
-
+            <header className="w-full bg-white shadow-sm z-50 sticky top-0">
+                <div className="relative flex justify-between items-center px-6 py-2 w-full">
+                    <div className="flex items-center gap-3 z-10 shrink-0">
+                        <div className="flex items-center">
+                            <img src="/images/logo/360Pipe_logo.png" alt="360Pipe Logo" className="h-[40px] my-1" />
+                        </div>
+                    </div>
+                    <div className="flex absolute left-1/2 transform -translate-x-1/2 items-center justify-center z-0 w-auto overflow-x-auto no-scrollbar">
+                        <Tabs tabsData={tabsData} selectedTab={selectedTab} type="header" fontSize={"16px"} />
+                    </div>
+                </div>
+            </header>
             {/* body */}
             <div className="mx-auto max-w-full px-20 py-6 sm:py-8">
                 {loading ? (

@@ -286,7 +286,7 @@ const ManageMails = ({ setAlert }) => {
                 selectedTab === 2 &&
                 (
                     <div className='border rounded-lg bg-white mt-4'>
-                        <DataTable columns={columns} rows={mails} getRowId={getRowId} height={rowSelectionModel?.length > 0 ? 450 : 500} checkboxSelection={true} setRowSelectionModel={handleChangeRowSelectionModel} rowSelectionModel={rowSelectionModel} showButtons={rowSelectionModel?.length > 0} buttons={actionButtons} hideFooter={true} />
+                        <DataTable columns={columns} rows={mails} getRowId={getRowId} height={rowSelectionModel?.length > 0 ? 450 : 500} checkboxSelection={true} setRowSelectionModel={handleChangeRowSelectionModel} rowSelectionModel={rowSelectionModel} showButtons={rowSelectionModel?.length > 0} buttons={actionButtons} />
                     </div>
                 )
             }

@@ -298,7 +298,6 @@ function AddTodo({ setAlert, open, handleClose, todoId, handleGetAllTodos }) {
                     const assignData = response?.result;
                     setValue('assignedId', assignData?.id);
                     setValue('teamId', assignData?.teamId);
-                    console.log("assignData?.customerIds?.some((row) => row === assignData?.assignBy)", assignData?.customerIds?.some((row) => row === assignData?.assignBy))
                     if (assignData?.teamId && assignData?.customerIds?.length > 0) {
                         const members = await getAllTeamMembers(assignData?.teamId);
                         const data = members?.result?.map((item) => ({
