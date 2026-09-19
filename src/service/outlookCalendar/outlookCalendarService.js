@@ -20,3 +20,11 @@ export const revokeOutlookCalendar = async () => {
         throw error;
     }
 };
+
+export const exchangeMicrosoftCode = async ({ code, redirectUri }) => {
+    const response = await axiosInterceptor().post("/microsoft/exchange", {
+        code,
+        redirect_uri: redirectUri,
+    });
+    return response;
+};
