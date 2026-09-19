@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState, useRef, useMemo } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { decryptUserId } from '../../../../utils/getUserDetails';
 import { getTimeZones } from '../../../../service/timeZones/timeZoneService';
@@ -13,15 +13,80 @@ import { getAllTeamMembers } from '../../../../service/teamMembers/teamMembersSe
 import CustomIcons from '../../../../components/common/icons/CustomIcons';
 import { getAllEventTypeList } from '../../../../service/calendar/calendarAppointmentEventType/calendarAppointmentEventTypeService';
 import { DateCalendar } from '@mui/x-date-pickers/DateCalendar';
+import { PickersDay } from '@mui/x-date-pickers/PickersDay';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import dayjs from 'dayjs';
 import { userTimeZone } from '../../../../service/common/commonService';
-import { createTheme, ThemeProvider, useTheme } from '@mui/material';
+import { createTheme, ThemeProvider, useTheme, Badge } from '@mui/material';
 import { freeSlotList, saveAppointment } from '../../../../service/calendar/calendarAppointment/calendarAppointmentService';
 import { connect } from 'react-redux';
 import { setAlert } from '../../../../redux/commonReducers/commonReducers';
 import { getCustomer } from '../../../../service/customers/customersService';
+
+const CustomDay = (props) => {
+    const {
+        day,
+        outsideCurrentMonth,
+        selected,
+        selectedSlotsCountMap = {},
+        sx,
+        ...otherProps
+    } = props;
+
+    const dateStr = day.format("MM/DD/YYYY");
+    const count = !outsideCurrentMonth ? (selectedSlotsCountMap[dateStr] || 0) : 0;
+    const hasSelectedSlots = count > 0;
+
+    return (
+        <Badge
+            key={day.toString()}
+            overlap="circular"
+            badgeContent={hasSelectedSlots ? count : undefined}
+            sx={{
+                '& .MuiBadge-badge': {
+                    backgroundColor: '#d97706',
+                    color: '#ffffff',
+                    fontSize: '0.65rem',
+                    fontWeight: 700,
+                    height: 18,
+                    minWidth: 18,
+                    borderRadius: '9px',
+                    padding: '0 3px',
+                    border: '2px solid #ffffff',
+                    boxShadow: '0 1px 3px rgba(0,0,0,0.25)',
+                    top: 5,
+                    right: 5,
+                    zIndex: 2,
+                    pointerEvents: 'none',
+                }
+            }}
+        >
+            <PickersDay
+                {...otherProps}
+                day={day}
+                outsideCurrentMonth={outsideCurrentMonth}
+                selected={selected}
+                sx={{
+                    ...sx,
+                    ...(hasSelectedSlots && !selected ? {
+                        backgroundColor: '#FEF3C7 !important',
+                        color: '#92400E !important',
+                        fontWeight: '700 !important',
+                        border: '1.5px solid #F59E0B !important',
+                        '&:hover': {
+                            backgroundColor: '#FDE68A !important',
+                        }
+                    } : {}),
+                    ...(hasSelectedSlots && selected ? {
+                        fontWeight: '700 !important',
+                        boxShadow: '0 0 0 2px #F59E0B !important',
+                    } : {})
+                }}
+            />
+        </Badge>
+    );
+};
 const formatDuration = (hours, minutes) => {
     if (hours && minutes) {
         const pad = (num) => String(num).padStart(2, '0');
@@ -143,6 +208,16 @@ const Appointment = ({ setAlert }) => {
     const [slotsLoading, setSlotsLoading] = useState(false);
     const [lastDateTz, setLastDateTz] = useState({ date: "", tz: "" });
 
+    const selectedSlotsCountMap = useMemo(() => {
+        const map = {};
+        for (const slot of selectedSlots) {
+            if (slot.date) {
+                map[slot.date] = (map[slot.date] || 0) + 1;
+            }
+        }
+        return map;
+    }, [selectedSlots]);
+
     const formatSlotTime = (timeStr) => {
         if (!timeStr) return "";
         const [hourStr, minuteStr] = timeStr.split(":");
@@ -201,19 +276,27 @@ const Appointment = ({ setAlert }) => {
 
         const existingIndex = selectedSlots.findIndex(s => s.start === startDateTime);
         let updated;
-        if (isFromContacts) {
-            if (existingIndex > -1) {
-                updated = [];
-            } else {
-                updated = [{ start: startDateTime, end: endDateTime, slotTime: slot, date: dateStr }];
-            }
+        if (existingIndex > -1) {
+            updated = selectedSlots.filter((_, idx) => idx !== existingIndex);
         } else {
-            if (existingIndex > -1) {
-                updated = selectedSlots.filter((_, idx) => idx !== existingIndex);
-            } else {
-                updated = [...selectedSlots, { start: startDateTime, end: endDateTime, slotTime: slot, date: dateStr }];
+            const selectedDays = Array.from(new Set(selectedSlots.map(s => s.date)));
+            const isDateAlreadySelected = selectedDays.includes(dateStr);
+            if (!isDateAlreadySelected && selectedDays.length >= 5) {
+                setAlert({
+                    open: true,
+                    type: 'warning',
+                    message: 'You can select slots for a maximum of 5 days only.',
+                });
+                return;
             }
+            updated = [...selectedSlots, { start: startDateTime, end: endDateTime, slotTime: slot, date: dateStr }];
         }
+        // Chronological sort across days and times
+        updated.sort((a, b) => {
+            const timeA = dayjs(a.start, "MM/DD/YYYY HH:mm:ss").valueOf();
+            const timeB = dayjs(b.start, "MM/DD/YYYY HH:mm:ss").valueOf();
+            return timeA - timeB;
+        });
         setSelectedSlots(updated);
 
         if (updated.length > 0) {
@@ -357,7 +440,7 @@ const Appointment = ({ setAlert }) => {
                     contactList: [],
                     currentDateYN: watch("currentDateYN"),
                     memTimeZone: tzValue,
-                    directBooking: isFromContacts
+                    directBooking: isFromContacts && formattedTimeSlots.length === 1
                 };
                 const res = await saveAppointment(payload);
                 if (res.status === 200) {
@@ -372,6 +455,11 @@ const Appointment = ({ setAlert }) => {
         } else if (activeStep === 3) {
             if (selectedSlots.length === 0) {
                 setAlert({ open: true, message: "Please select at least one time slot.", type: 'error' });
+                return;
+            }
+            const selectedDays = Array.from(new Set(selectedSlots.map(s => s.date)));
+            if (selectedDays.length > 5) {
+                setAlert({ open: true, message: "You can select slots for a maximum of 5 days only.", type: 'warning' });
                 return;
             }
             setActiveStep((prev) => prev + 1);
@@ -607,7 +695,7 @@ const Appointment = ({ setAlert }) => {
 
                                 <div className="flex flex-col md:flex-row justify-center items-start gap-8 max-w-2xl w-full mx-auto mb-6">
                                     {/* Calendar Column */}
-                                    <div className="flex-1 flex justify-center bg-white p-2 rounded-lg border border-gray-100 shadow-sm">
+                                    <div className="flex-1 flex flex-col items-center bg-white p-2 rounded-lg border border-gray-100 shadow-sm">
                                         <ThemeProvider theme={customTheme}>
                                             <LocalizationProvider dateAdapter={AdapterDayjs}>
                                                 <DateCalendar
@@ -615,24 +703,88 @@ const Appointment = ({ setAlert }) => {
                                                     onChange={(newDate) => setSelectedDate(newDate)}
                                                     views={['day']}
                                                     minDate={dayjs()}
-                                                    maxDate={dayjs().add(5, 'day')}
+                                                    slots={{
+                                                        day: CustomDay,
+                                                    }}
+                                                    slotProps={{
+                                                        day: {
+                                                            selectedSlotsCountMap,
+                                                        }
+                                                    }}
                                                 />
                                             </LocalizationProvider>
                                         </ThemeProvider>
+
+                                        {/* Selected Days Pills */}
+                                        {Object.keys(selectedSlotsCountMap).length > 0 && (
+                                            <div className="w-full mt-2 pt-3 border-t border-gray-100 px-2">
+                                                <div className="flex items-center justify-between text-xs text-gray-700 font-semibold mb-1.5">
+                                                    <span>Selected Days ({Object.keys(selectedSlotsCountMap).length}/5):</span>
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => {
+                                                            setSelectedSlots([]);
+                                                            setValue("start", "");
+                                                            setValue("end", "");
+                                                        }}
+                                                        className="text-amber-700 hover:text-amber-900 font-normal text-[11px] underline"
+                                                    >
+                                                        Clear all
+                                                    </button>
+                                                </div>
+                                                {/* <div className="flex flex-wrap gap-1.5">
+                                                    {Object.keys(selectedSlotsCountMap).map((dateStr) => {
+                                                        const count = selectedSlotsCountMap[dateStr];
+                                                        const isViewing = selectedDate.format("MM/DD/YYYY") === dateStr;
+                                                        return (
+                                                            <button
+                                                                key={dateStr}
+                                                                type="button"
+                                                                onClick={() => setSelectedDate(dayjs(dateStr, "MM/DD/YYYY"))}
+                                                                className={`px-2 py-1 rounded-md text-xs font-medium flex items-center gap-1.5 transition-all ${
+                                                                    isViewing
+                                                                        ? 'bg-amber-600 text-white shadow-xs'
+                                                                        : 'bg-amber-50 text-amber-900 border border-amber-200 hover:bg-amber-100'
+                                                                }`}
+                                                                title="Click to view slots for this day"
+                                                            >
+                                                                <span>{dateStr}</span>
+                                                                <span className={`px-1.5 py-0.2 rounded-full text-[10px] font-bold ${
+                                                                    isViewing ? 'bg-white text-amber-700' : 'bg-amber-200 text-amber-900'
+                                                                }`}>
+                                                                    {count}
+                                                                </span>
+                                                            </button>
+                                                        );
+                                                    })}
+                                                </div> */}
+                                            </div>
+                                        )}
                                     </div>
 
                                     {/* Slots Column */}
                                     <div className="w-full md:w-56 flex flex-col items-center md:items-start">
-                                        <div className="flex items-center justify-between w-full mb-3">
+                                        <div className="flex items-center justify-between w-full mb-1">
                                             <p className="text-gray-900 font-semibold text-lg">
                                                 {selectedDate.format("MM/DD/YYYY")}
                                             </p>
-                                            {selectedSlots.length > 0 && (
-                                                <span className="text-xs font-bold text-amber-600 bg-amber-50 border border-amber-200 px-2 py-0.5 rounded-full">
-                                                    {selectedSlots.length} selected
+                                            {selectedSlotsCountMap[selectedDate.format("MM/DD/YYYY")] > 0 ? (
+                                                <span className="text-xs font-bold text-amber-700 bg-amber-100 border border-amber-300 px-2 py-0.5 rounded-full">
+                                                    {selectedSlotsCountMap[selectedDate.format("MM/DD/YYYY")]} selected
+                                                </span>
+                                            ) : (
+                                                <span className="text-xs text-gray-400 font-medium">
+                                                    0 selected
                                                 </span>
                                             )}
                                         </div>
+                                        {/* {selectedSlots.length > 0 && (
+                                            <div className="text-xs text-gray-500 mb-3 w-full text-left">
+                                                <span>
+                                                    Total: <strong className="text-amber-600">{selectedSlots.length}</strong> slot{selectedSlots.length > 1 ? 's' : ''} across <strong className="text-amber-600">{Object.keys(selectedSlotsCountMap).length}</strong> day{Object.keys(selectedSlotsCountMap).length > 1 ? 's' : ''}
+                                                </span>
+                                            </div>
+                                        )} */}
 
                                         {slotsLoading ? (
                                             <p className="text-gray-500 text-sm py-4">Loading slots...</p>
