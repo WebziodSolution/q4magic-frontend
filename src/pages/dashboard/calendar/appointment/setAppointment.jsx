@@ -199,7 +199,7 @@ const SetAppointment = () => {
                                     Meeting rejected successfully!
                                 </h2>
                                 <p className="text-gray-600 text-sm font-medium">
-                                    This appointment request has been declined. No event has been added to your calendar.
+                                    This appointment request has been declined. Any existing scheduled meeting for these time slots has been removed from your calendar and connected Google/Outlook accounts.
                                 </p>
                             </div>
                         </div>

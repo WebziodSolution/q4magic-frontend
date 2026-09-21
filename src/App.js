@@ -49,6 +49,7 @@ import CalendarSetting from "./pages/dashboard/calendar/calendarSetting";
 import Appointment from "./pages/dashboard/calendar/appointment/appointment";
 import SetAppointment from "./pages/dashboard/calendar/appointment/setAppointment";
 import EditAppointment from "./pages/dashboard/calendar/appointment/editAppointment";
+import SelectNewSlots from "./pages/dashboard/calendar/appointment/selectNewSlots";
 
 library.add(fas, far, fab)
 
@@ -89,6 +90,10 @@ const App = ({ setLoading }) => {
     {
       path: "/edit-appointment",
       element: <EditAppointment />,
+    },
+    {
+      path: "/select-new-slots",
+      element: <SelectNewSlots />,
     },
     {
       path: "/subaccountactivesetup/:token",

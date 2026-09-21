@@ -121,12 +121,15 @@ function Step({ n, title, children }) {
 
 function Accordion({ items, openId: controlledOpenId, onChangeOpenId, selectedPreset, onApplyPreset }) {
     const [uncontrolledOpenId, setUncontrolledOpenId] = useState(items[0]?.id ?? null);
-    const openId = controlledOpenId ?? uncontrolledOpenId;
+    const openId = controlledOpenId !== undefined ? controlledOpenId : uncontrolledOpenId;
 
     const toggle = (id) => {
         const next = openId === id ? null : id;
         if (onChangeOpenId) onChangeOpenId(next);
         else setUncontrolledOpenId(next);
+        if (onApplyPreset) {
+            onApplyPreset(id);
+        }
     };
 
     return (
@@ -288,6 +291,7 @@ function MailScraper({ setAlert, setLoading }) {
         setValue("imap_port", preset.port);
         setAuthType(preset.authType);
         setOpenAccordionId(key);
+        setMessage(null);
     };
 
     const handleConnectMicrosoft = () => {
@@ -296,7 +300,25 @@ function MailScraper({ setAlert, setLoading }) {
 
         const authUrl = `https://login.microsoftonline.com/common/oauth2/v2.0/authorize?client_id=${MS_CLIENT_ID}&response_type=code&redirect_uri=${redirectUri}&response_mode=query&scope=${scope}&state=mail`;
 
-        window.open(authUrl, "Microsoft Auth", "width=600,height=700");
+        const width = 600;
+        const height = 700;
+        const dualScreenLeft = window.screenLeft !== undefined ? window.screenLeft : window.screenX;
+        const dualScreenTop = window.screenTop !== undefined ? window.screenTop : window.screenY;
+
+        const screenWidth = window.innerWidth ? window.innerWidth : document.documentElement.clientWidth ? document.documentElement.clientWidth : window.screen.width;
+        const screenHeight = window.innerHeight ? window.innerHeight : document.documentElement.clientHeight ? document.documentElement.clientHeight : window.screen.height;
+
+        const left = Math.round(((screenWidth / 2) - (width / 2)) + dualScreenLeft);
+        const top = Math.round(((screenHeight / 2) - (height / 2)) + dualScreenTop);
+
+        const popup = window.open(
+            authUrl,
+            "Microsoft Auth",
+            `width=${width},height=${height},top=${top},left=${left},scrollbars=yes,resizable=yes`
+        );
+        if (popup && popup.focus) {
+            popup.focus();
+        }
     };
 
     const onSubmit = async (values) => {
@@ -657,6 +679,8 @@ function MailScraper({ setAlert, setLoading }) {
                             />
                             <CardBody>
                                 <Accordion
+                                    openId={openAccordionId}
+                                    // onChangeOpenId={setOpenAccordionId}
                                     selectedPreset={selectedPreset}
                                     onApplyPreset={onPreset}
                                     items={[
@@ -813,7 +837,6 @@ function MailScraper({ setAlert, setLoading }) {
                                             ),
                                         },
                                     ]}
-                                    openId={openAccordionId}
                                     onChangeOpenId={(id) => {
                                         setOpenAccordionId(id);
                                         if (id && PROVIDER_PRESETS[id]) {
