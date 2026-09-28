@@ -25,6 +25,7 @@ function MultipleFileUpload({
   setDeleteLogo,
   isFileUpload = true,
   removableExistingAttachments = true,
+  removableFiles = true,
   flexView = false,
   // ✅ When false, show compact list rows (icon + name + delete) instead of tiles
   preview = true,
@@ -225,7 +226,7 @@ function MultipleFileUpload({
     return (
       <div
         key={`${name}-${url}`}
-        className={`w-full max-w-full flex items-center justify-between gap-3  ${flexView ? "ml-3" : ""}`}
+        className={`w-full max-w-full flex items-center justify-between gap-3  ${flexView && isFileUpload ? "ml-3" : ""}`}
       >
         <div className="flex items-center gap-3 min-w-0">
           <div className="h-8 w-8 flex items-center justify-center rounded-md bg-gray-50 border border-gray-200">
@@ -239,7 +240,7 @@ function MultipleFileUpload({
               className="text-left min-w-0"
               title={name}
             >
-              <div className="text-xs text-gray-800 w-32">{name}</div>
+              <div className={`text-xs text-gray-800 ${isFileUpload ? "w-32" : "max-w-[280px]"} truncate`}>{name}</div>
             </button>
           ) : (
             <NavLink
@@ -248,7 +249,7 @@ function MultipleFileUpload({
               className="min-w-0"
               title={name}
             >
-              <div className="text-xs text-gray-800 w-32">{name}</div>
+              <div className={`text-xs text-gray-800 ${isFileUpload ? "w-32" : "max-w-[280px]"} truncate`}>{name}</div>
             </NavLink>
           )}
         </div>
@@ -466,7 +467,7 @@ function MultipleFileUpload({
               url,
               name,
               ext,
-              removable: true,
+              removable: removableFiles,
               onRemove: () => removeFile(file.name),
               isInternal: !!file.isInternal,
               onCheckboxChange: (checked) =>

@@ -6,6 +6,7 @@ import {
     deleteTodo as deleteTodoApi,
     completeTodo,
     getTodoByTeam,
+    getTodo,
 } from "../../../service/todo/todoService";
 import {
     getAllTodosNotes,
@@ -26,7 +27,7 @@ import { sendTaskReminder } from "../../../service/todoAssign/todoAssignService"
 import Button from "../../../components/common/buttons/button";
 import { getAllTeams } from "../../../service/teamDetails/teamDetailsService";
 import CheckBoxSelect from "../../../components/common/select/checkBoxSelect";
-import { NavLink, useLocation } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import { getUserDetails } from "../../../utils/getUserDetails";
 import Select from "../../../components/common/select/select";
 
@@ -97,6 +98,18 @@ const status = [
     { id: 2, title: "Completed" },
     { id: 3, title: "All" },
 ];
+
+const formatUrl = (url) => {
+    if (!url) return "#";
+    const trimmed = url.trim();
+    if (/^[a-zA-Z][a-zA-Z\d+\-.]*?:/.test(trimmed)) {
+        return trimmed;
+    }
+    if (trimmed.startsWith("//")) {
+        return `https:${trimmed}`;
+    }
+    return `https://${trimmed}`;
+};
 
 // ----------------------------------------------------------------------
 // TodoScreen
@@ -252,11 +265,37 @@ const Todo = ({ setAlert, setHeaderTitle }) => {
         setSelectedTeam(newValue);
     }
 
+    const refreshSelectedTask = async (taskId) => {
+        if (!taskId) return;
+        try {
+            const res = await getTodo(taskId);
+            if (res?.status === 200 && res?.result) {
+                const uiTask = mapApiTodoToUi(res.result);
+                setSelectedTask((prev) => {
+                    const prevNotes = prev?.id === taskId ? (prev.notes || []) : [];
+                    return { ...uiTask, notes: prevNotes };
+                });
+                await refreshNotes(taskId, uiTask);
+            }
+        } catch (e) {
+            console.error("refreshSelectedTask error:", e);
+        }
+    };
+
     const handleGetTodoByTeam = async () => {
         const teamIds = selectedTeam?.map(t => t.id) || [];
         const res = await getTodoByTeam({ teamIds, status: status?.find(s => s.id === selectedStatus)?.title === "Open Action" ? "Pending" : status?.find(s => s.id === selectedStatus)?.title || "" });
         const uiTodos = (Array.isArray(res?.result) ? res.result : []).map(mapApiTodoToUi);
         setTasks(uiTodos);
+
+        setSelectedTask((prev) => {
+            if (!prev) return null;
+            const updated = uiTodos.find((t) => t.id === prev.id);
+            if (updated) {
+                return { ...updated, notes: prev.notes || [] };
+            }
+            return prev;
+        });
     }
 
     useEffect(() => {
@@ -284,9 +323,16 @@ const Todo = ({ setAlert, setHeaderTitle }) => {
         setAddTodoOpen(true);
     };
 
-    const handleCloseAddTodo = () => {
+    const handleCloseAddTodo = async () => {
+        const currentEditId = editingTodoId;
+        const currentSelectedId = selectedTask?.id;
         setAddTodoOpen(false);
         setEditingTodoId(null);
+        await handleGetTodoByTeam();
+        const targetId = currentSelectedId || currentEditId;
+        if (targetId) {
+            await refreshSelectedTask(targetId);
+        }
     };
 
     // ------------------------------------------------------------------
@@ -443,14 +489,30 @@ const Todo = ({ setAlert, setHeaderTitle }) => {
                                 ) : (
                                     <CustomIcons iconName="fa-solid fa-file-pdf" css="text-red-500 h-4 w-4" />
                                 )}
-                                <a
-                                    href={item.url || "#"}
-                                    target="_blank"
-                                    rel="noreferrer"
-                                    className="text-blue-600 hover:underline font-medium"
-                                >
-                                    {item.name}
-                                </a>
+                                {item.type === "link" ? (
+                                    <a
+                                        href={formatUrl(item.url)}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="text-blue-600 hover:underline font-medium"
+                                    >
+                                        {item.name || item.url}
+                                    </a>
+                                ) : item.url ? (
+                                    <a
+                                        href={item.url}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        download
+                                        className="text-blue-600 hover:underline font-medium"
+                                    >
+                                        {item.name}
+                                    </a>
+                                ) : (
+                                    <span className="text-blue-600 font-medium">
+                                        {item.name}
+                                    </span>
+                                )}
                             </div>
                         ))}
                     </div>
@@ -778,7 +840,7 @@ const Todo = ({ setAlert, setHeaderTitle }) => {
                                                     <div className="flex items-start gap-2">
                                                         <div
                                                             className={`flex justify-center items-center gap-1 p-1 rounded-full w-5 h-5 
-                                                                ${task.completionProgressPercent === 100 ? "bg-transparent w-0 h-0" :task.isOverdue
+                                                                ${task.completionProgressPercent === 100 ? "bg-transparent w-0 h-0" : task.isOverdue
                                                                     ? "bg-red-600"
                                                                     : task.isDueToday
                                                                         ? "bg-yellow-400"
@@ -886,20 +948,29 @@ const Todo = ({ setAlert, setHeaderTitle }) => {
                                                         <CustomIcons iconName="fa-solid fa-file" css="text-red-500 h-4 w-4" />
                                                     )}
                                                     {item.type === "link" ? (
-                                                        <NavLink
-                                                            href={item.url || "#"}
+                                                        <a
+                                                            href={formatUrl(item.url)}
                                                             target="_blank"
-                                                            rel="noreferrer"
+                                                            rel="noopener noreferrer"
                                                             className="text-blue-600 hover:underline font-medium"
                                                         >
+                                                            {item.name || item.url}
+                                                        </a>
+                                                    ) : item.url ? (
+                                                        <a
+                                                            href={item.url}
+                                                            target="_blank"
+                                                            rel="noopener noreferrer"
+                                                            download
+                                                            className="text-blue-600 font-medium"
+                                                        >
                                                             {item.name}
-                                                        </NavLink>
+                                                        </a>
                                                     ) : (
                                                         <p className="text-blue-600 font-medium">
                                                             {item.name}
                                                         </p>
-                                                    )
-                                                    }
+                                                    )}
                                                 </div>
                                             ))}
                                         </div>

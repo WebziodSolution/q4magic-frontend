@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { connect } from 'react-redux';
 import { styled, useTheme } from '@mui/material/styles';
 import { Controller, useForm } from 'react-hook-form';
+import { useDropzone } from 'react-dropzone';
 
 import Components from '../../../components/muiComponents/components';
 import Button from '../../../components/common/buttons/button';
@@ -107,6 +108,71 @@ function AddTodo({ setAlert, open, handleClose, todoId, handleGetAllTodos }) {
     const addFileRow = () => {
         setTempFileRows((prev) => [...prev, { id: safeId(), fileName: '', files: [], existingImages: [] }]);
     };
+
+    const onDropEmptyZone = (acceptedFiles) => {
+        if (!acceptedFiles || acceptedFiles.length === 0) return;
+
+        const allowedTypes = [
+            "image/png",
+            "image/jpeg",
+            "image/jpg",
+            "application/pdf",
+            "application/msword",
+            "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+            "application/vnd.ms-excel",
+            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            "text/html"
+        ];
+        const allowedExtensions = ["png", "jpg", "jpeg", "pdf", "doc", "docx", "xls", "xlsx", "html"];
+
+        const approved = [];
+        const rejected = [];
+
+        acceptedFiles.forEach((file) => {
+            const ext = (file.name.split('.').pop() || '').toLowerCase();
+            if (allowedTypes.includes(file.type) || allowedExtensions.includes(ext)) {
+                approved.push(file);
+            } else {
+                rejected.push(file);
+            }
+        });
+
+        if (rejected.length) {
+            const bad = rejected.map((f) => f.name).join(", ");
+            setAlert({
+                open: true,
+                message: `Some files are not allowed: ${bad}. Only images (png, jpg, jpeg), PDF, Word, Excel, HTML.`,
+                type: "error"
+            });
+        }
+
+        if (approved.length) {
+            const newRows = approved.map((file, idx) => {
+                const autoName = file.name.split('?')[0].replace(/\.[^/.]+$/, '');
+                return {
+                    id: `${Date.now()}_${idx}_${Math.random().toString(16).slice(2)}`,
+                    fileName: autoName,
+                    files: [
+                        Object.assign(file, {
+                            preview: URL.createObjectURL(file),
+                            isInternal: false,
+                        })
+                    ],
+                    existingImages: [],
+                };
+            });
+            setTempFileRows((prev) => [...prev, ...newRows]);
+        }
+    };
+
+    const {
+        getRootProps: getEmptyZoneRootProps,
+        getInputProps: getEmptyZoneInputProps,
+        isDragActive: isEmptyZoneDragActive,
+    } = useDropzone({
+        onDrop: onDropEmptyZone,
+        multiple: true,
+    });
 
     const setRowFileName = (rowId, value) => {
         setTempFileRows((prev) => prev.map((r) => (r.id === rowId ? { ...r, fileName: value } : r)));
@@ -601,6 +667,8 @@ function AddTodo({ setAlert, open, handleClose, todoId, handleGetAllTodos }) {
                         // priority: priority?.find((s) => s.id === parseInt(watch('priority')))?.title || null,
                     };
                     await assignTodo(assignData);
+                    handleGetAllTodos();
+                    onClose();
                 } else {
                     setAlert({ open: true, message: res?.message || 'Failed to create todo', type: 'error' });
                 }
@@ -941,8 +1009,16 @@ function AddTodo({ setAlert, open, handleClose, todoId, handleGetAllTodos }) {
                                     </div>
 
                                     {tempFileRows.length === 0 ? (
-                                        <div className="text-sm text-slate-400 text-center py-6 border border-dashed border-slate-200 rounded-lg bg-white">
-                                            Drag & Drop files here.
+                                        <div
+                                            {...getEmptyZoneRootProps()}
+                                            className={`text-sm text-center py-6 border border-dashed rounded-lg transition-colors cursor-pointer ${
+                                                isEmptyZoneDragActive
+                                                    ? 'border-blue-400 bg-blue-50 text-blue-600'
+                                                    : 'border-slate-200 bg-white text-slate-400 hover:border-blue-400 hover:bg-slate-50'
+                                            }`}
+                                        >
+                                            <input {...getEmptyZoneInputProps()} />
+                                            {isEmptyZoneDragActive ? 'Drop files here...' : 'Drag & Drop files here.'}
                                         </div>
                                     ) : (
                                         <div className="space-y-3">
@@ -964,7 +1040,8 @@ function AddTodo({ setAlert, open, handleClose, todoId, handleGetAllTodos }) {
                                                                 existingImages={row.existingImages}
                                                                 setExistingImages={(v) => setRowExistingImages(row.id, v)}
                                                                 placeHolder="Drag & drop files here, or click to select files"
-                                                                isFileUpload={true}
+                                                                isFileUpload={!(row.files?.length > 0 || row.existingImages?.length > 0)}
+                                                                removableFiles={false}
                                                                 removableExistingAttachments={false}
                                                                 flexView={true}
                                                                 type="todoAttachments"

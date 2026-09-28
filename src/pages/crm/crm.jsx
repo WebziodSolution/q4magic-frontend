@@ -194,7 +194,7 @@ const Crm = ({ loadingMessage, setLoadingMessage, setLoading, setAlert, loading,
                             description: errorDescription,
                             fullUrl: popupUrl,
                         });
-
+                        // Salesforce authentication failed: External client app is not installed in this org
                         setAlert({
                             open: true,
                             type: "error",
