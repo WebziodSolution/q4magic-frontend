@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { Controller, useForm } from 'react-hook-form';
-import { NavLink, useNavigate } from 'react-router-dom';
+import { NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { connect } from 'react-redux';
 import Cookies from 'js-cookie';
 
@@ -21,6 +21,11 @@ import { getUserInfo } from '../../../service/salesforce/connect/salesforceConne
 
 const Login = ({ setAlert, loading, salesforceUserDetails, setSalesforceTokens, clearSalesforceTokens, setSalesforceUserDetails }) => {
     const navigate = useNavigate();
+    const location = useLocation();
+
+    const queryRedirect = new URLSearchParams(location.search).get("redirect");
+    const redirectPath = location.state?.from || queryRedirect || "/dashboard";
+
     const [isPasswordVisible, setIsPasswordVisible] = useState(false);
     const [loginPreference, setLoginPreference] = useState(null);
 
@@ -125,15 +130,17 @@ const Login = ({ setAlert, loading, salesforceUserDetails, setSalesforceTokens, 
                     const data = userRes?.result?.data || null;
                     if (data) {
                         setSalesforceUserDetails(data);
-                        navigate("/dashboard")
+                        navigate(redirectPath);
                     } else {
                         setSalesforceUserDetails(null)
                         clearSalesforceTokens();
-                        navigate("/dashboard")
+                        navigate(redirectPath);
                     }
+                } else {
+                    navigate(redirectPath);
                 }
             } else {
-                navigate("/dashboard")
+                navigate(redirectPath);
             }
             // setAlert({ open: true, type: "success", message: res?.data?.message || "Login successful" })
         } else {
@@ -143,9 +150,9 @@ const Login = ({ setAlert, loading, salesforceUserDetails, setSalesforceTokens, 
 
     useEffect(() => {
         if (Cookies.get('authToken')) {
-            navigate("/dashboard");
+            navigate(redirectPath);
         }
-    }, [])
+    }, [redirectPath])
 
     useEffect(() => {
         if (!showAuth) return;
@@ -174,7 +181,7 @@ const Login = ({ setAlert, loading, salesforceUserDetails, setSalesforceTokens, 
                 //     message: "Login successful",
                 //     type: "success",
                 // });
-                navigate("/dashboard");
+                navigate(redirectPath);
             } else {
                 switch (event.data.pageName) {
                     case "documentFailedPage":

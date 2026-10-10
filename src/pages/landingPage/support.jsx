@@ -1,16 +1,36 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import Header from './header';
 import CopyRight from './copyRight';
 
 const Support = () => {
+    useEffect(() => {
+        document.title = "Support - 360Pipe";
+    }, []);
+
     return (
         <>
-            <div className="h-screen flex flex-col">
-                <Header />
+            <div className="h-screen flex flex-col bg-white overflow-hidden">
+                {/* Header Section */}
+                <div className="bg-white border-b border-gray-200">
+                    <Header />
+                </div>
+
+                {/* Style override to force Header to be solid white, relative (in flex flow), and clean */}
+                <style dangerouslySetInnerHTML={{
+                    __html: `
+                        header {
+                            position: relative !important;
+                            background-color: white !important;
+                            box-shadow: none !important;
+                        }
+                    `
+                }} />
 
                 {/* Scrollable Content Area */}
-                <div className="flex-1 overflow-y-auto pt-20 pb-16 px-4 sm:px-6 lg:px-8">
+                <div className="flex-1 overflow-y-auto py-10 px-4 sm:px-6 lg:px-8">
                     <div className="max-w-4xl mx-auto">
+                        <h1 className="text-3xl font-extrabold text-gray-900 mb-8">Support</h1>
+
                         {/* System and Security */}
                         <section className="mb-10">
                             <h2 className="text-2xl font-bold text-gray-900 mb-4">System and Security</h2>
@@ -58,7 +78,7 @@ const Support = () => {
                         <section className="mb-10">
                             <h2 className="text-2xl font-bold text-gray-900 mb-4">AI</h2>
                             <ol className="list-decimal list-inside space-y-1 text-gray-700">
-                                <li>Text Generation and Rewriting. It's great!!</li>
+                                <li>Text Generation and Rewriting. It&apos;s great!!</li>
                                 <li>Image creation from text instructions</li>
                                 <li>Survey creation</li>
                             </ol>
@@ -91,7 +111,7 @@ const Support = () => {
                                 <li>The ability to send email to an individual, group or segmented list.</li>
                                 <li>The ability to send a text or HTML email</li>
                                 <li>The ability to resend a campaign to those who did not open the email.</li>
-                                <li>The ability to build an html email with a WSYWIG drag-and-drop editor. It's GREAT!</li>
+                                <li>The ability to build an html email with a WSYWIG drag-and-drop editor. It&apos;s GREAT!</li>
                                 <li>The ability to edit your images right in our editor</li>
                                 <li>The ability to send us your existing email template and we will hand code it properly to work with our engine</li>
                                 <li>Predefined common email templates</li>
@@ -163,7 +183,7 @@ const Support = () => {
                         <section className="mb-10">
                             <h2 className="text-2xl font-bold text-gray-900 mb-4">Surveys</h2>
                             <ol className="list-decimal list-inside space-y-1 text-gray-700">
-                                <li>The ability to customize your survey with a logo and use your look and feel. And it's free! We do not charge more for features!</li>
+                                <li>The ability to customize your survey with a logo and use your look and feel. And it&apos;s free! We do not charge more for features!</li>
                                 <li>Single and Multi-Page forms</li>
                                 <li>The ability to embed a landing page</li>
                                 <li>The ability to associate demographic questions into your Survey.</li>
@@ -191,11 +211,24 @@ const Support = () => {
                                 <li>Ideal to put on your website and highlight the advantages of your product or service.</li>
                             </ol>
                         </section>
+
+                        {/* Contact Information */}
+                        <section className="mb-10 bg-gray-50 border border-gray-200 p-6 rounded-xl">
+                            <h2 className="text-xl font-bold text-gray-900 mb-3">Contact Support</h2>
+                            <p className="text-gray-700 mb-3">
+                                Need direct help with your 360Pipe account or integrations? Get in touch with our team:
+                            </p>
+                            <div className="space-y-1.5 text-gray-800">
+                                <p>📩 <strong>Email:</strong> <a href="mailto:360pipeinc@gmail.com" className="text-blue-600 hover:underline">360pipeinc@gmail.com</a></p>
+                                <p>📞 <strong>Phone:</strong> +1 (415) 555-3600</p>
+                                <p>🌐 <strong>Website:</strong> <a href="https://devwebapp.360pipe.com" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">https://devwebapp.360pipe.com</a></p>
+                            </div>
+                        </section>
                     </div>
                 </div>
 
-                {/* Fixed Footer */}
-                <div className="fixed bottom-0 z-30 w-full border-t border-gray-200 shadow-sm bg-white">
+                {/* Fixed Footer Section */}
+                <div className="border-t border-gray-200 bg-white z-40">
                     <CopyRight />
                 </div>
             </div>

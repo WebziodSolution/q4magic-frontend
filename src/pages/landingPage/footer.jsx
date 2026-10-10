@@ -21,7 +21,7 @@ const Footer = () => {
                             </span>
                             <div>
                                 <p className="text-sm font-medium text-white">Write to us</p>
-                                <p className="font-medium text-xl text-white">support@360pipe.com</p>
+                                <p className="font-medium text-xl text-white">360pipeinc@gmail.com</p>
                             </div>
                         </div>
 
@@ -77,11 +77,11 @@ const Footer = () => {
                             </div>
                             <p className="text-base font-normal text-[#D2DBEF]">
                                 By continuing, you agree to 360Pipe{" "}
-                                <NavLink to={"#"} className="underline">
+                                <NavLink to={"/privacy"} className="underline">
                                     Terms of Use
                                 </NavLink>{" "}
                                 and{" "}
-                                <NavLink to={"#"} className="underline">
+                                <NavLink to={"/privacy"} className="underline">
                                     Privacy Policy
                                 </NavLink>
                                 .

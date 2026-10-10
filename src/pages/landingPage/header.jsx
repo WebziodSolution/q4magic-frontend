@@ -68,15 +68,21 @@ const Header = () => {
                     </NavLink>
                 </div>
 
-                <nav className="hidden xl:flex space-x-6 text-gray-800 font-medium ">
+                <nav className="hidden xl:flex space-x-6 text-gray-800 font-medium">
                     {navItems?.map((item, idx) => (
                         <div key={idx} className="relative group">
                             <NavLink
                                 to={item.route}
-                                className={`px-3 py-1 rounded-full transition-all duration-300 ${isScrolled
-                                    ? "hover:text-blue-600"
-                                    : "text-black hover:text-blue-700 hover:bg-white hover:shadow-sm"
-                                    }`}
+                                end={item.route === "/"}
+                                className={({ isActive }) =>
+                                    `px-4 py-1.5 rounded-full transition-all duration-300 ${
+                                        isActive
+                                            ? "text-[#44288E] font-bold bg-[#44288E]/10 shadow-xs"
+                                            : isScrolled
+                                                ? "text-gray-700 hover:text-[#44288E]"
+                                                : "text-black hover:text-[#44288E] hover:bg-white hover:shadow-sm"
+                                    }`
+                                }
                             >
                                 {item.title}
                                 {/* {item.children && <span className="ml-1">+</span>} */}
@@ -144,10 +150,21 @@ const Header = () => {
                         <div key={idx}>
                             <NavLink
                                 to={item.route}
-                                className="flex justify-between items-center w-full px-2 py-2 text-left text-gray-800 font-semibold hover:bg-gray-100 rounded-md"
-                                onClick={() =>
-                                    setOpenMenu(openMenu === idx ? null : idx)
+                                end={item.route === "/"}
+                                className={({ isActive }) =>
+                                    `flex justify-between items-center w-full px-3 py-2 text-left font-semibold rounded-md transition-colors ${
+                                        isActive
+                                            ? "text-[#44288E] bg-[#44288E]/10 font-bold"
+                                            : "text-gray-800 hover:bg-gray-100"
+                                    }`
                                 }
+                                onClick={() => {
+                                    if (item.children) {
+                                        setOpenMenu(openMenu === idx ? null : idx);
+                                    } else {
+                                        setIsOpen(false);
+                                    }
+                                }}
                             >
                                 {item.title}
                                 {item.children && (

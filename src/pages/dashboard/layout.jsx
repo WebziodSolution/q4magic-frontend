@@ -1,5 +1,7 @@
+import { useEffect } from "react"
 import { Outlet, useLocation, useNavigate } from "react-router"
 import { connect } from "react-redux"
+import Cookies from "js-cookie"
 import AlertDialog from "../../components/common/alertDialog/alertDialog"
 
 import AppHeader from "./appHeader/appHeader"
@@ -11,6 +13,16 @@ import SubHeader from "./appHeader/subHeader"
 const Layout = ({ sessionEndModel }) => {
   const navigate = useNavigate()
   const location = useLocation()
+
+  useEffect(() => {
+    if (!Cookies.get('authToken')) {
+      const targetUrl = location.pathname + location.search;
+      navigate('/login', {
+        state: { from: targetUrl },
+        replace: true,
+      });
+    }
+  }, [location.pathname, location.search, navigate]);
 
   return (
     // overflow-hidden makes sure ONLY main scrolls (not the body/page)
