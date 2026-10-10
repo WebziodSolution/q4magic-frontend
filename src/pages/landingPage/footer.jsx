@@ -77,7 +77,7 @@ const Footer = () => {
                             </div>
                             <p className="text-base font-normal text-[#D2DBEF]">
                                 By continuing, you agree to 360Pipe{" "}
-                                <NavLink to={"/privacy"} className="underline">
+                                <NavLink to={"/terms"} className="underline">
                                     Terms of Use
                                 </NavLink>{" "}
                                 and{" "}

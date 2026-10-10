@@ -44,6 +44,7 @@ import Performance from "./pages/dashboard/performance/performance";
 import Support from "./pages/landingPage/support";
 import DealManagement from "./pages/dashboard/dealManagement/dealManagement";
 import Privacy from "./pages/privacy/Privacy";
+import Terms from "./pages/terms/Terms";
 import ManageApps from "./pages/dashboard/manageApps/manageApps";
 import CalendarSetting from "./pages/dashboard/calendar/calendarSetting";
 import Appointment from "./pages/dashboard/calendar/appointment/appointment";
@@ -74,6 +75,10 @@ const App = ({ setLoading }) => {
     {
       path: "/privacy",
       element: <Privacy />,
+    },
+    {
+      path: "/terms",
+      element: <Terms />,
     },
     {
       path: "/register",
